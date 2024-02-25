@@ -5,7 +5,7 @@ blueprint:
     o ventana (es posible retrasar la acción x segundos).\n  - Mientras la puerta
     o ventana permace abierta (en intervalos de x minutos).\n  - Cuando la puerta
     o ventana se cierra (es posible retrasar la acción x segundos).\n"
-  source_url: https://gist.github.com/Lamicayada/9d9bf67a6fef0df9a549dc5b176e0d1e
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/door_and_window_control.yaml
   domain: automation
   input:
     dispositivo:
