@@ -14,7 +14,6 @@ blueprint:
     se controle la presencia de personas en la estancia desde HASS (replica el funcionamiento 
     de la geolocalización del servicio Auto Assist de Tado°)"
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_presence_control_tado.yaml
   input:
     personas:
       name: Personas
