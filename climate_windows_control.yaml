@@ -8,6 +8,7 @@ blueprint:
     Incluye una entidad adicional para guardar el estado anterior del climatizador,
     esto es útil para p.e. programar mensajes personalizados en la UI'
   domain: automation
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_windows_control.yaml
   input:
     ventanas:
       name: Ventanas o Puertas
