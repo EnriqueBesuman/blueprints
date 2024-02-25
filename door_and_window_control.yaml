@@ -1,0 +1,205 @@
+blueprint:
+  name: MIO - Control de Puertas y Ventanas
+  description: "# Control de cerrado o apertura de puertas y ventanas\n\n\nFacilita
+    la ejecución de acciones en los siguientes supuestos:\n  - Cuando se abre la puerta
+    o ventana (es posible retrasar la acción x segundos).\n  - Mientras la puerta
+    o ventana permace abierta (en intervalos de x minutos).\n  - Cuando la puerta
+    o ventana se cierra (es posible retrasar la acción x segundos).\n"
+  source_url: https://gist.github.com/Lamicayada/9d9bf67a6fef0df9a549dc5b176e0d1e
+  domain: automation
+  input:
+    dispositivo:
+      name: Puerta o ventana
+      description: "`requerido`\n\n Puerta o ventana a controlar"
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain:
+            - binary_sensor
+            device_class:
+            - window
+          - domain:
+            - binary_sensor
+            device_class:
+            - door
+          - domain:
+            - binary_sensor
+            device_class:
+            - garage_door
+    retraso_abrir:
+      name: Retraso al abrir
+      description: "`opcional`\n\n Tiempo de espera en segundos, desde que se abre
+        la puerta o ventana, hasta que ejecuta la acción"
+      default: 0
+      selector:
+        number:
+          min: 0.0
+          max: 120.0
+          unit_of_measurement: seconds
+          mode: box
+          step: 1.0
+    accion_abrir:
+      name: Acciones al abrir
+      description: "`opcional`\n\n Acciones a ejecutar cuando se abre la puerta o
+        ventana.\n\n\nPara acciones tipo notificación, se ponen a disposición las
+        siguientes variables para componer el cuerpo del mensaje:\n\n  - ***{{ retraso_abrir
+        }}***: Tiempo de espera en segundos, desde que se abre la puerta o ventana,
+        hasta que ejecuta la acción.\n  - ***{{ retraso_cerrar }}***: Tiempo de espera
+        en segundos, desde que se cierra la puerta o ventana, hasta que ejecuta la
+        acción.\n  - ***{{ intervalo_repeticion }}***: Intervalo en segundos entre
+        avisos, cuando la puerta o ventana permanece abierta.\n"
+      default: []
+      selector:
+        action: {}
+    aviso_repetitivo:
+      name: Realizar acción recursiva mientras la puerta o ventana esté abierta
+      description: "`requerido`\n\n Ejecutar acción cada x tiempo mientras la puerta
+        o ventan permanezca abierta."
+      default: false
+      selector:
+        boolean: {}
+    intervalo_repeticion:
+      name: Intervalo entre avisos
+      description: "`opcional`\n\n Intervlo en minutos entre avisos, cuando la puerta
+        o ventana permanece abierta."
+      default: 5
+      selector:
+        number:
+          min: 1.0
+          max: 120.0
+          unit_of_measurement: minutes
+          mode: box
+          step: 1.0
+    accion_repeticion:
+      name: Acciones en cada repetición
+      description: "`opcional`\n\n Acciones a ejecutar mientras la puerta o ventana
+        permanezca abierta.\n\n\nPara acciones tipo notificación, se ponen a disposición
+        las siguientes variables para componer el cuerpo del mensaje:\n\n  - ***{{
+        retraso_abrir }}***: Tiempo de espera en segundos, desde que se abre la puerta
+        o ventana, hasta que ejecuta la acción.\n  - ***{{ retraso_cerrar }}***: Tiempo
+        de espera en segundos, desde que se cierra la puerta o ventana, hasta que
+        ejecuta la acción.\n  - ***{{ intervalo_repeticion }}***: Intervalo en minutos
+        entre avisos, cuando la puerta o ventana permanece abierta.\n  - ***{{ tiempo_abierta
+        }}***: Tiempo total en minutos transcurrido desde que se abrió la puerta o
+        ventana (sin contar el retraso en segundos al abrir...)."
+      default: []
+      selector:
+        action: {}
+    retraso_cerrar:
+      name: Retraso al cerrar
+      description: "`opcional`\n\n Tiempo de espera en segundos, desde que se cierra
+        la puerta o ventana, hasta que ejecuta la acción."
+      default: 0
+      selector:
+        number:
+          min: 0.0
+          max: 120.0
+          unit_of_measurement: seconds
+          mode: box
+          step: 1.0
+    accion_cerrar:
+      name: Acciones al cerrar
+      description: "`opcional`\n\n Acciones a ejecutar cuando se cierra la puerta
+        o ventana.\n\n\nPara acciones tipo notificación, se ponen a disposición las
+        siguientes variables para componer el cuerpo del mensaje:\n\n  - ***{{ retraso_abrir
+        }}***: Tiempo de espera en segundos, desde que se abre la puerta o ventana,
+        hasta que ejecuta la acción.\n  - ***{{ retraso_cerrar }}***: Tiempo de espera
+        en segundos, desde que se cierra la puerta o ventana, hasta que ejecuta la
+        acción.\n  - ***{{ intervalo_repeticion }}***: Intervalo en minutos entre
+        avisos, cuando la puerta o ventana permanece abierta.\n"
+      default: []
+      selector:
+        action: {}
+variables:
+  accion_abrir: !input accion_abrir
+  accion_cerrar: !input accion_cerrar
+  accion_repeticion: !input accion_repeticion
+  aviso_repetitivo: !input aviso_repetitivo
+  retraso_abrir: !input retraso_abrir
+  retraso_cerrar: !input retraso_cerrar
+  intervalo_repeticion: !input intervalo_repeticion
+trigger:
+- id: abierta
+  platform: state
+  entity_id: !input dispositivo
+  from: 'off'
+  to: 'on'
+  for: !input retraso_abrir
+- id: cerrada
+  platform: state
+  entity_id: !input dispositivo
+  from: 'on'
+  to: 'off'
+  for: !input retraso_cerrar
+condition: []
+action:
+- choose:
+  - alias: Puerta o ventana abierta
+    conditions:
+      condition: trigger
+      id: abierta
+    sequence:
+    - choose:
+      - alias: Ver si aviso puerta abierta
+        conditions:
+          condition: template
+          value_template: '{{ accion_abrir is defined and accion_abrir|length > 0
+            }}
+
+            '
+        sequence: !input accion_abrir
+    - choose:
+      - alias: Si aviso repetitido
+        conditions:
+          condition: template
+          value_template: '{{ aviso_repetitivo }}
+
+            '
+        sequence:
+        - alias: Esperamos a que se cierre la puerta o ventana a intervalos de x minutos
+          repeat:
+            sequence:
+            - wait_for_trigger:
+              - platform: state
+                entity_id: !input dispositivo
+                to: 'off'
+              timeout:
+                minutes: !input intervalo_repeticion
+            - variables:
+                tiempo_abierta: "{{ (intervalo_repeticion |int(0) * repeat.index |int(0))
+                  }}  \n"
+            - if:
+              - alias: Si pasa el intervalo y aún no se ha cerrado la puerta o ventana
+                condition: state
+                entity_id: !input dispositivo
+                state: 'on'
+              then:
+              - choose:
+                  conditions:
+                    condition: template
+                    value_template: '{{ accion_repeticion is defined and accion_repeticion|length
+                      > 0 }}
+
+                      '
+                  sequence: !input accion_repeticion
+            until:
+            - condition: state
+              entity_id: !input dispositivo
+              state: 'off'
+- choose:
+  - alias: Puerta o ventana cerrada
+    conditions:
+      condition: state
+      entity_id: !input dispositivo
+      state: 'off'
+    sequence:
+    - choose:
+        conditions:
+          condition: template
+          value_template: '{{ accion_cerrar is defined and accion_cerrar|length >
+            0 }}
+
+            '
+        sequence: !input accion_cerrar
+mode: single

@@ -1,0 +1,245 @@
+blueprint:
+  name: MIO - Climatización - Ajustar temperatura dispositivos Tado°
+  description: 
+    "# Ajuste automático de temperatura para dispositivos Tado°\n\n
+
+    Ajuste periódico de los offset de temperatura de uno o varios climatizadores Tado°, 
+    en base a la medición de un sensor de temperatura externo asociado a cada climatizador.\n\n
+
+    Cada ajuste realizado quedará recogido en el log de HA, después cada cual que haga con esto
+    lo que le parezca.\n\n
+
+    ## Parametrización:\n\n
+
+    ### Climatizadores con su sensor: \n\n
+
+    > Aquí es donde definimos qué sensor de temperatura corresponde con cada climatizador. El sensor
+    de temperatura suele proporcionarlo un dispositivo dentro de la habitación, pero separado del
+    radiador lo suficiente como para que la medición sea realista.\n\n
+    > \ - Los sensores de temperatura pueden ser cualquiera que tengamos en la instalación,
+    no tiene que porqué ser de la marca Tado°.\n
+    > \ - Los climatizadores **SI** deben ser de la marca Tado°.\n
+
+    ### Intervalo entre mediciones: \n\n
+
+    > Intervalo de tiempo en minutos entre cada revisión de mediciones de temperatura de los dispositivos Tado°.\n
+    > \ - Un valor más bajo provoca más comprobaciones, y por lo tanto más ajustes, afectando a la vida útil 
+      de las baterías de los dispositivos.\n\n
+
+    ### Margen de ajuste: \n\n
+
+    > Únicamente se ajustará el offset de temperatura, si la diferencia entre mediciones es de al menos el valor
+     dado (en grados Centígrados).\n
+    > \ - Un valor más bajo provoca más comprobaciones, y por lo tanto más ajustes, afectando a la vida útil 
+      de las baterías de los dispositivos.\n\n
+
+    ### Acciones:\n\n
+
+    > Opcionalmente, puede configurarse una o varias acciones que se ejecutarán ***con cada ajuste realizado*** de
+     temperatura. Es decir, si por las condiciones que se aplican (p.e. offset mayor de 0,5°C) no se realiza el ajuste,
+     evidentemente tampoco se ejecutarán las acciones).\n
+    > Para acciones tipo notificación, se ponen a disposición las siguientes variables para componer el cuerpo del mensaje:\n\n
+    > \ - ***{{ climate_friendlyname }}***: Nombre del climatizador\n
+    > \ - ***{{ sensor_friendlyname }}***: Nombre del sensor de temperatura\n
+    > \ - ***{{ climate_temperatura }}***: Temperatura del climatizador\n
+    > \ - ***{{ sensor_temperatura }}***: Temperatura del sensor\n
+    > \ - ***{{ nuevo_offset }}***: Offset actual del climatizador\n
+    > \ - ***{{ offset_anterior }}***: Nuevo offset aplicado\n\
+    > \ - ***{{ climate_metrica }}***: Unidad de medida de los sensores\n\n\n
+    
+    ### Nivel de log:\n\n
+
+    > Corresponde con el nivel de log con el que se insertarán los mensajes de ajuste realizado en el log de Home
+    Assistant. Creo que lo suyo es que sean mensajes tipo ***'info'***, pero lo cierto es que si el nivel con el que
+    se insertan es menor (en criticidad) al nivel parametrizado por defecto en la instalación, no los veras en
+    en registro...
+
+    **Version**: 2.0.0\n
+    
+    *Help & FAQ**: [ya Veremos Cómo Llamar a Esto](https://community.home-assistant.io/t/nosecomosellamara)\n
+    **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
+    
+  source_url: https://github.com/panhans/homeassistant/ebesuman/main/blueprints/automation/nosecomosellamara.yaml
+  domain: automation
+  input:
+    climate_sensor_map:
+      name: Climatizadores con su sensor
+      description: 
+        "`requerido`\n\n
+        Mapeo de cada dispositivo climatizador con el sensor de temperatura asociado.\n\n
+        Cada par debe tomar la forma '***nombre_dispositivo_climate: nombre_entidad_sensor***'.\n
+        Por ejemplo: '***calefaccion_dormitorio: termometro_dormitorio***.'\n"
+      selector:
+        object: {}
+      default:
+        nombre_entidad_climate: nombre_entidad_sensor
+
+    intervalo:
+      name: Intervalo entre mediciones
+      description: 
+        "`requerido`\n\n
+        Intervalo de tiempo en minutos, entre cada medición, y posible ajuste."
+      default: 5
+      selector:
+        number:
+          min: 1
+          max: 120
+          unit_of_measurement: minutes
+          mode: box
+          step: 1
+
+    margen:
+      name: Margen de ajuste
+      description: 
+        "`requerido`\n\n
+        los offset de temperatura sólo se actualizan si la diferencia de temperatura entre el climatizador 
+        y su sensor de temperatura asociado, está por encima del valor indicado. "
+      default: 0.5
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          unit_of_measurement: grados
+          mode: box
+          step: 0.1
+
+    accion:
+      name: Acciones a ejecutar
+      description: 
+        "`opcional`\n\n
+        Acciones a ejecutar después de cada ajuste de temperatura. La imaginación es libre, pero lo más
+        típico es enviar una notificación al (o a la) señor (o señora) de la casa."
+      default: []
+      selector:
+        action: {}
+
+    nivel_log:
+      name: Nivel de log
+      description: 
+        "`requerido`\n\n
+        Nivel de log en el que quieres que aparezcan los mensajes de ajuste en el log.\n
+        Ten en cuenta que si el nivel que indiques es inferior al predeterminado, no veras los mensajes..."
+      default: info
+      selector:
+        select:
+          options:
+          - critical
+          - fatal
+          - error
+          - warning
+          - info
+          - debug
+          - notset
+          multiple: false
+
+variables:
+  climate_sensor_map: !input climate_sensor_map
+  climates: >
+    {% set all_climates = climate_sensor_map.keys() | list %}
+    {{ climates | default(all_climates, true) }}
+  margen: !input margen
+  accion: !input accion
+  nivel_log: !input nivel_log
+
+trigger_variables:
+  intervalo: !input intervalo
+
+trigger:
+  - platform: template 
+    value_template: >
+      {{ now().minute % intervalo | int(2) == 0 }}
+    id: iniciociclo
+
+condition: []
+
+action:
+
+  - repeat:
+
+      count: >
+        {{ climates | count }}
+        
+      sequence:
+      - variables:
+
+          climate_entidad: >
+            {{ 'climate.' ~ climates[repeat.index - 1] }}
+          climate_entidad_sensor: >
+            {%- for entity in states.sensor 
+              if entity.entity_id.startswith('sensor.' ~ climates[repeat.index - 1] ) 
+              and entity.attributes.device_class == 'temperature' %}
+                {{ entity.entity_id }}
+                {%- break %}
+            {%- endfor %}
+          climate_metrica: >
+            {{ state_attr(climate_entidad_sensor,'unit_of_measurement') }}
+          climate_unidad_attr: >
+            {{ iif(climate_metrica == '°C', 'offset_celsius', 'offset_fahrenheit') }}
+          offset_anterior: >
+            {{ state_attr(climate_entidad, climate_unidad_attr) |float(0)
+            |round(1) }}
+          climate_friendlyname: >
+            {{ state_attr(climate_entidad,'friendly_name') }}
+          climate_temperatura_bruta: >
+            {{ states(climate_entidad_sensor) | float(0)
+            |round(1) }}
+          climate_temperatura: >
+            {{ (climate_temperatura_bruta - offset_anterior) | float(0)
+            |round(1) }}
+          sensor_entidad: >
+            {{ 'sensor.' ~ climate_sensor_map[climates[repeat.index - 1]] }}
+          sensor_metrica: >
+            {{ state_attr(sensor_entidad,'unit_of_measurement') }}
+          sensor_friendlyname: >
+            {{ state_attr(sensor_entidad,'friendly_name') }}
+          sensor_temperatura_bruta: |
+            {{ states(sensor_entidad) | float(0) 
+            |round(1) }}
+          sensor_temperatura: >
+            {{ iif(climate_metrica == sensor_metrica, sensor_temperatura_bruta, 
+            iif(sensor_metrica == '°C', (sensor_temperatura_bruta * 9/5) + 32 , (sensor_temperatura_bruta - 32) * 5/9)) }}
+          nuevo_offset: >
+            {{ ((climate_temperatura - sensor_temperatura) * -1) | float(0)
+            |round(1) }}
+            
+      - if:
+
+          - condition: and
+            conditions:
+              - condition: template
+                value_template: >
+                  {{ (climate_temperatura_bruta - sensor_temperatura)
+                  | abs >= float(margen) }}
+              - condition: template
+                value_template: >
+                  {{ offset_anterior != nuevo_offset }}
+
+        then:
+
+          - service: tado.set_climate_temperature_offset
+            target:
+              entity_id: >
+                {{ climate_entidad }}
+            data:
+              offset: >
+                {{ nuevo_offset }}
+
+          - service: system_log.write
+            data:
+              message: 
+                "***** Ajuste offset de: '{{ climate_entidad}}' realizado con éxito *****\n
+                Sensor Temperatura Climatizador: '{{ climate_entidad_sensor }}'\n
+                Sensor Temperatura Externo: '{{ sensor_entidad }}'\n
+                Temperatura Climatizador (sin offset): {{ climate_temperatura ~ climate_metrica }}, Temperatura Sensor Externo: {{ sensor_temperatura ~ climate_metrica }}\n
+                Offset Anterior: {{ offset_anterior ~ climate_metrica }}\n, Nuevo Offset: {{ nuevo_offset ~ climate_metrica }}"           
+              level: >
+                {{ nivel_log }}
+              logger: >
+                {{ this.entity_id }}
+
+          - choose:
+            - conditions: >
+                {{ accion is defined and accion|length > 0 }}
+              sequence: !input accion
+
+mode: single

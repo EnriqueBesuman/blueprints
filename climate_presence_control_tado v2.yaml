@@ -1,0 +1,129 @@
+blueprint:
+  name: MIO - Climatización - Control Presencia Dispositivos Tado°
+  description: 
+    "Pone en modo Ausente (en caso de estar encendido) y vuelve a su estado anterior
+    una entidad de climatización (termostato, aire acondicionado...), según se quede
+    la casa vacía o no de habitantes.\n\n
+
+    Se puede programar un retraso en el encendido/apagado, y una accion después de cada cambio.
+    Incluye una entidad adicional para guardar el estado anterior del climatizador,
+    esto es útil para p.e. programar mensajes personalizados en la UI.\n\n
+
+    Está especialmente diseñado para dispositivos Tado° (que disponen del atributo preset_mode),
+    de manera que el modo Ausente se configure en la propia aplicación Tado°, y únicamente 
+    se controle la presencia de personas en la estancia desde HASS (replica el funcionamiento 
+    de la geolocalización del servicio Auto Assist de Tado°)"
+  domain: automation
+  input:
+    personas:
+      name: Personas
+      description: Personas que queramos controlar si están en la estancia o no.
+      selector:
+        entity:
+          multiple: true
+          filter:
+          - domain: person
+    retraso_salir:
+      name: Retraso al Salir
+      description: Tiempo de espera en segundos, desde que la estancia se queda vacía, hasta que se apaga el climatizador
+      default: 30
+      selector:
+        number:
+          min: 0.0
+          max: 3600.0
+          unit_of_measurement: seconds
+          mode: box
+          step: 1.0
+    retraso_entrar:
+      name: Retraso al Entrar
+      description: Tiempo de espera en segundos, desde que la estancia vuelve a estar habitada, hasta que se enciende el climatizador
+      default: 30
+      selector:
+        number:
+          min: 0.0
+          max: 600.0
+          unit_of_measurement: seconds
+          mode: box
+          step: 1.0
+    climatizador:
+      name: Entidad de Climatización
+      description: El climatizador que se desea controlar según la presencia.
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain: climate
+            supported_features: 
+              - climate.ClimateEntityFeature.PRESET_MODE
+                ### Investigar esto: select(''is_device_attr'', ''manufacturer'', ''Tado'')
+    accion_salir:
+      name: Acción al Salir (Opcional)
+      description: Acción a ejecutar cuando la estancia se queda vacía (p.e. enviar una notificación)
+      default: []
+      selector:
+        action: {}
+    accion_entrar:
+      name: Acción al Entrar (Opcional)
+      description: Acción a ejecutar cuando la estancia vuelve a estar habitada (p.e. enviar una notificación)
+      default: []
+      selector:
+        action: {}
+    preset_anterior:
+      name: Estado Preset Anterior
+      description: Selector para almacenar el Modo Presencia en el que se encontraban los climatizadores antes de apagarlo.
+        Se guarda siempre que se queda vacía la casa, incluso estando el climatizador apagado
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain: input_select
+
+variables:
+  accion_salir: !input accion_salir
+  accion_entrar: !input accion_entrar
+  climatizador: !input climatizador
+  preset_anterior: !input preset_anterior
+trigger_variables:
+  personas: !input personas
+
+mode: single
+
+trigger:
+- platform: template
+  value_template: "{{ expand(personas) | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+  for: !input retraso_salir
+  id: person_off
+
+action:
+- service: input_select.select_option
+  target:
+    entity_id: !input preset_anterior
+  data:
+    option: "{{ state_attr(climatizador,'preset_mode') }}"
+- condition: not
+  conditions:
+  - condition: state
+    entity_id: !input climatizador
+    state: 'off'
+- service: climate.set_preset_mode
+  target:
+    entity_id: !input climatizador
+  data:
+    preset_mode: "away"
+- choose:
+  - conditions: '{{ accion_salir is defined and accion_salir|length > 0 }}'
+    sequence: !input accion_salir
+- wait_for_trigger:
+  - platform: state
+    entity_id: !input personas
+    to: 'home'
+  continue_on_timeout: false
+- delay: !input retraso_entrar
+- choose:
+  - conditions: '{{ accion_entrar is defined and accion_entrar|length > 0 }}'
+    sequence: !input accion_entrar
+- service: climate.set_preset_mode
+  target:
+    entity_id: !input climatizador
+  data:
+    preset_mode: '{{ states(preset_anterior) }}'

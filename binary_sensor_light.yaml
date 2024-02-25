@@ -1,0 +1,51 @@
+blueprint:
+  name: MIO - Activador - Luz
+  description: Enciende Luces cuando se activa un Sensor Binario, y espera un tiempo determinado para apagarlas.
+  domain: automation
+#  source_url: 
+  input:
+    activador:
+      name: Activador
+      description: Sensor que apagará o encenderá la luz
+      selector:
+        entity:
+          multiple: false
+          filter:
+            domain:
+            - binary_sensor    
+    espera:
+      name: Tiempo de Espera
+      description: Tiempo que permanecen encendidos desde la última desactivación del sensor.
+      default: "00:01:00"
+    luces:
+      name: Luces
+      description: Luces que se encenderán o apagarán según se active o desactive el sensor
+      selector:
+        entity:
+          multiple: true
+          filter:
+            domain:
+            - light
+
+variables:
+  activador: !input activador
+  luces: !input luces
+  mode: "{{ states(activador) }}"
+
+trigger:
+  - platform: state
+    entity_id: !input activador
+    to: "off"
+    for: !input espera
+  - entity_id: !input activador
+    platform: state
+    to: "on"
+
+condition: []
+
+action:
+  - service: "light.turn_{{mode}}"
+    data:
+      entity_id: "{{luces}}"
+    
+mode: single

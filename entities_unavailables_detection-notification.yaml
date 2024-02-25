@@ -1,0 +1,57 @@
+blueprint:
+  name: MIO - Entidades no disponibles & notificación con la lista
+  description: Regularmente comprueba todas las entidades y ejecuta alguna acción.
+  domain: automation
+  input:
+    hora:
+      name: Hora de la comprobación
+      description: La comprobación se ejecutará a la hora indicada
+      default: '10:00:00'
+      selector:
+        time: {}
+    dia:
+      name: Días de la semana en los que se ejecutará la comprobación
+      description: 'La comprobación puede ejecutarse todos los días de la semana (0) 
+        o en un día determinado (1: Lunes ... 7: Domingo)'
+      default: 0
+      selector:
+        number:
+          min: 0.0
+          max: 7.0
+          mode: slider
+          step: 1.0
+    excluidos:
+      name: Entidades excluidas
+      description: Las entidades indicadas se excluirán de la comprobación
+      default:
+        entity_id: []
+      selector:
+        target:
+          entity: {}
+    acciones:
+      name: Acciones
+      description: Notificaciones o acciones similares a ejecutar. Se puede utilizar la variable {{entidades}}
+        para referenciar a las entidades no disponibles encontradas.
+      selector:
+        action: {}
+variables:
+  dia: !input dia
+  excluidos: !input excluidos
+  entidades: 
+    "{% set result = namespace(entidades=[]) %} 
+    {%- for state in states -%}
+      {% if state.state == 'unavailable' and not state.entity_id in excluidos.entity_id %}
+        {% set result.entidades = result.entidades + [state.name] %}
+      {%- endif %}
+    {% endfor %}
+    {{result.entidades|join(',\n')}}"
+
+trigger:
+- platform: time
+  at: !input hora
+condition:
+- '{{ entidades != '''' and (dia | int == 0 or dia | int == now().isoweekday()) }}'
+action:
+- choose: []
+  default: !input acciones
+mode: single

@@ -1,0 +1,74 @@
+blueprint:
+  name: MIO - Dispositivos no disponibles & notificación con la lista
+  description: Regularmente comprueba todos los dispositivos y ejecuta alguna acción.
+  domain: automation
+  input:
+    hora:
+      name: Hora de la comprobación
+      description: La comprobación se ejecutará a la hora indicada
+      default: '10:00:00'
+      selector:
+        time: {}
+    dia:
+      name: Días de la semana en los que se ejecutará la comprobación
+      description: 'La comprobación puede ejecutarse todos los días de la semana (0) 
+        o en un día determinado (1: Lunes ... 7: Domingo)'
+      default: 0
+      selector:
+        number:
+          min: 0.0
+          max: 7.0
+          mode: slider
+          step: 1.0
+    excluidos:
+      name: Dispositivos excluidas
+      description: Los dispositivos indicadas se excluirán de la comprobación
+      default:
+        entity_id: []
+      selector:
+        target:
+          entity: {}
+    acciones:
+      name: Acciones
+      description: Notificaciones o acciones similares a ejecutar. Se puede utilizar la variable {{dispositivos}}
+        para referenciar a las entidades no disponibles encontradas.
+      selector:
+        action: {}
+        
+variables:
+  dia: !input dia
+  excluidos: !input excluidos
+  dispositivos: 
+    "{% set device_ids = states
+      | selectattr('state', 'in', ['unavailable'])
+      | rejectattr ('entity_id', 'in', integration_entities('group')) 
+      | map(attribute='entity_id')
+      | unique
+      | sort()
+      | list
+    %}
+    {% set resultado = namespace(dispositivos=[]) %} 
+    {% for device_id in device_ids %}
+      {% if not device_id in excluidos.device_id %}
+        {% if state_attr(device_id, 'friendly_name') is not none %}
+          {% set resultado.dispositivos = resultado.dispositivos + [state_attr(device_id, 'friendly_name')] %} 
+        {% else %}
+          {% if device_attr(device_id, 'name_by_user') is not none %}
+            {% set resultado.dispositivos = resultado.dispositivos + [device_attr(device_id, 'name_by_user')] %} 
+          {% else %}
+            {% set resultado.dispositivos = resultado.dispositivos + [device_attr(device_id, 'name')] %}
+          {%- endif %}
+        {%- endif %}
+      {%- endif %}
+    {% endfor %}
+    {{resultado.dispositivos|join(',\n')}}"
+
+trigger:
+- platform: time
+  at: !input hora
+condition:
+- '{{ dispositivos != '''' and (dia | int == 0 or dia | int == now().isoweekday()) }}'
+action:
+- choose: []
+  default: !input acciones
+mode: single
