@@ -2,6 +2,7 @@ blueprint:
   name: MIO - Entidades no disponibles & notificación con la lista
   description: Regularmente comprueba todas las entidades y ejecuta alguna acción.
   domain: automation
+  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/entities_unavailables_detection-notification.yaml
   input:
     hora:
       name: Hora de la comprobación
