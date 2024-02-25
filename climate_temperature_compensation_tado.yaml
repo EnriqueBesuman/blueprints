@@ -59,8 +59,8 @@ blueprint:
     *Help & FAQ**: [ya Veremos Cómo Llamar a Esto](https://community.home-assistant.io/t/nosecomosellamara)\n
     **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
     
-  source_url: https://github.com/panhans/homeassistant/ebesuman/main/blueprints/automation/nosecomosellamara.yaml
   domain: automation
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_temperature_compensation_tado.yaml
   input:
     climate_sensor_map:
       name: Climatizadores con su sensor
