@@ -1,5 +1,5 @@
 blueprint:
-  name: MIO - Climatización - Control Presencia v2
+  name: MIO - Climatización - Control Presencia
   description: 'Apaga (en caso de estar encendido) y vuelve a su estado anterior
     una entidad de climatización (termostato, aire acondicionado...), según se quede
     la estancia (puede se una habitación, o la casa entera) vacía o no de habitantes.
