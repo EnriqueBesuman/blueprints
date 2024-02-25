@@ -2,7 +2,7 @@ blueprint:
   name: MIO - Activador - Luz (Noche)
   description: Enciende Luces cuando se activa un Sensor Binario, y espera un tiempo determinado para apagarlas, solo por la noche.
   domain: automation
-#  source_url: 
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/binary_sensor_light_sunset.yaml
   input:
     activador:
       name: Activador
