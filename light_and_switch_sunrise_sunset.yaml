@@ -1,0 +1,67 @@
+blueprint:
+  name: MIO - Luces e Interruptores - Simular amanecer y anochecer
+  description: Encender luces e interruptores al amanecer y apagarlos al anochecer
+  domain: automation
+  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/light_and_switch_sunrise_sunset.yaml
+
+  input:
+    time_delay:
+      name: Tiempo de espera
+      description: Desfase horario respecto al amanece para el encendido (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
+      default: '01:00:00'
+      selector:
+        time: {}
+    time_offset:
+      name: Tiempo de adelanto
+      description: Desfase horario respecto al anochecer para el apagado (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
+      default: "-1:00:00"
+      selector:
+        time: {}
+    light_target:
+      name: Luces
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+          - domain: light
+    switch_target:
+      name: Interruptores
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+          - domain: switch
+
+trigger:
+  - platform: sun
+    event: sunrise
+    offset: !input time_delay
+  - platform: sun
+    event: sunset
+    offset: !input time_offset
+
+action: 
+- choose:
+  - conditions: '{{ switch_target is defined and switch_target|length > 0 }}'
+    sequence:
+    - service: >
+        {% if trigger.event == "sunrise" %}
+          switch.turn_on
+        {% else %}
+          switch.turn_off
+        {% endif %}
+      target:
+          entity_id: !input switch_target
+
+  - conditions: '{{ light_target is defined and light_target|length > 0 }}'
+    sequence:
+    - service: >
+        {% if trigger.event == "sunrise" %}
+          light.turn_on
+        {% else %}
+          light.turn_off
+        {% endif %}
+      target:
+          entity_id: !input light_target
