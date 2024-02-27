@@ -22,7 +22,7 @@ blueprint:
 
     ### Modo Anterior:\n\n
 
-    Es necesario crear una entidad [***'input_select'***}(https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
+    Es necesario crear una entidad [***'input_select'***](https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
     con los posibles de ***'preset_mode'***: ***'away'***, ***'home'***, para guardar el estado anterior,
     y poder restaurarlo cuando se cierren las ventanas.\n\n
 
