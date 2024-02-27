@@ -30,7 +30,7 @@ blueprint:
     
     **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/climate_presence_control_tado.yaml
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_presence_control_tado.yaml
   input:
     personas:
       name: Personas
