@@ -12,7 +12,23 @@ blueprint:
     Está especialmente diseñado para dispositivos Tado° (que disponen del atributo preset_mode),
     de manera que el modo Ausente se configure en la propia aplicación Tado°, y únicamente 
     se controle la presencia de personas en la estancia desde HASS (replica el funcionamiento 
-    de la geolocalización del servicio Auto Assist de Tado°)"
+    de la geolocalización del servicio Auto Assist de Tado°)\n\n
+
+    ### Acciones:\n\n
+
+    > Opcionalmente, puede configurarse una o varias acciones que se ejecutarán al abrir o cerrar las ventanas.\n
+    > Para acciones tipo notificación (que serán las más habituales), se ponen a disposición las siguientes variables para componer el cuerpo del mensaje:\n\n
+    > \ - ***{{ modo_anterior }}***: Modo anterior (ver a continuación)\n\n
+
+    ### Modo Anterior:\n\n
+
+    Es necesario crear una entidad [***'input_select'***}(https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
+    con los posibles de ***'preset_mode'***: ***'away'***, ***'home'***, para guardar el estado anterior,
+    y poder restaurarlo cuando se cierren las ventanas.\n\n
+
+    **Version**: 2.0.0\n
+    
+    **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/climate_presence_control_tado.yaml
   input:

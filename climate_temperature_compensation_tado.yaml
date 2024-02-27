@@ -56,7 +56,6 @@ blueprint:
 
     **Version**: 2.0.0\n
     
-    *Help & FAQ**: [ya Veremos Cómo Llamar a Esto](https://community.home-assistant.io/t/nosecomosellamara)\n
     **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
     
   domain: automation

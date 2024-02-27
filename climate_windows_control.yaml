@@ -1,12 +1,26 @@
 blueprint:
   name: MIO - Climatización - Control Ventanas
-  description: 'Apaga (en caso de estar encendido) y vuelve a su estado anterior
+  description: 
+    "Apaga (en caso de estar encendido) y vuelve a su estado anterior
     una entidad de climatización (termostato, aire acondicionado...), según se abran 
     o cierren un grupo de ventanas y/o puertas. Se puede programar un retraso en el 
-    encendido/apagado, y una accion después de cada cambio.
+    encendido/apagado, y una accion después de cada cambio.\n\n
 
-    Incluye una entidad adicional para guardar el estado anterior del climatizador,
-    esto es útil para p.e. programar mensajes personalizados en la UI'
+    ### Acciones:\n\n
+
+    > Opcionalmente, puede configurarse una o varias acciones que se ejecutarán al abrir o cerrar las ventanas.\n
+    > Para acciones tipo notificación (que serán las más habituales), se ponen a disposición las siguientes variables para componer el cuerpo del mensaje:\n\n
+    > \ - ***{{ modo_anterior }}***: Modo anterior (ver a continuación)\n\n
+
+    ### Modo Anterior:\n\n
+
+    Es necesario crear una entidad [***'input_select'***}(https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
+    con los posibles estados (valores de ***'hvac_mode'***) en los que puede estar tu climatizador, para guardar el estado anterior,
+    y poder restaurarlo cuando se cierren las ventanas.\n\n
+
+    **Version**: 2.0.0\n
+    
+    **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_windows_control.yaml
   input:
