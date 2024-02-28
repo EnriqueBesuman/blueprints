@@ -54,14 +54,8 @@ action:
         {% endif %}
       target:
           entity_id: !input switch_target
-<<<<<<< HEAD
-
-  - conditions: '{{ light_target |length }}'
-=======
-          
 - choose:
-  - conditions: '{{ light_target is defined and light_target|length > 0 }}'
->>>>>>> eaab0a5a907c6522fa12b8e3bcff038a9fa6c229
+  - conditions: '{{ light_target |length }}'
     sequence:
     - service: >
         {% if trigger.event == "sunrise" %}
