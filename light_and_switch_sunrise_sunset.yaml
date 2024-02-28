@@ -1,8 +1,8 @@
 blueprint:
-  name: MIO - Luces e Interruptores - Simular amanecer y anochecer
-  description: Encender luces e interruptores al amanecer y apagarlos al anochecer
+  name: MIO - Luces - Simular amanecer y anochecer
+  description: Encender luces al amanecer y apagarlos al anochecer
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/light_and_switch_sunrise_sunset.yaml
+  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/light_sunrise_sunset.yaml
 
   input:
     time_delay:
@@ -25,14 +25,6 @@ blueprint:
           multiple: true
           filter:
           - domain: light
-    switch_target:
-      name: Interruptores
-      default: []
-      selector:
-        entity:
-          multiple: true
-          filter:
-          - domain: switch
 
 trigger:
   - platform: sun
@@ -43,19 +35,6 @@ trigger:
     offset: !input time_offset
 
 action: 
-- choose:
-  - conditions: '{{ switch_target |length }}'
-    sequence:
-    - service: >
-        {% if trigger.event == "sunrise" %}
-          switch.turn_on
-        {% else %}
-          switch.turn_off
-        {% endif %}
-      target:
-          entity_id: !input switch_target
-- choose:
-  - conditions: '{{ light_target |length }}'
     sequence:
     - service: >
         {% if trigger.event == "sunrise" %}
