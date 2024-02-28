@@ -44,7 +44,7 @@ trigger:
 
 action: 
 - choose:
-  - conditions: '{{ switch_target is defined and switch_target|length > 0 }}'
+  - conditions: '{{ switch_target |length }}'
     sequence:
     - service: >
         {% if trigger.event == "sunrise" %}
@@ -55,7 +55,7 @@ action:
       target:
           entity_id: !input switch_target
 
-  - conditions: '{{ light_target is defined and light_target|length > 0 }}'
+  - conditions: '{{ light_target |length }}'
     sequence:
     - service: >
         {% if trigger.event == "sunrise" %}
