@@ -35,12 +35,11 @@ trigger:
     offset: !input time_offset
 
 action: 
-    sequence:
-    - service: >
-        {% if trigger.event == "sunrise" %}
-          light.turn_on
-        {% else %}
-          light.turn_off
-        {% endif %}
-      target:
-          entity_id: !input light_target
+- service: >
+    {% if trigger.event == "sunrise" %}
+      light.turn_on
+    {% else %}
+      light.turn_off
+    {% endif %}
+  target:
+      entity_id: !input light_target
