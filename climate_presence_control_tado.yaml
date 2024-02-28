@@ -69,9 +69,10 @@ blueprint:
         entity:
           multiple: false
           filter:
-          - domain: climate
-            supported_features: 
-              - climate.ClimateEntityFeature.PRESET_MODE
+          - domain: 
+            - climate
+#            supported_features: 
+#              - climate.ClimateEntityFeature.PRESET_MODE
                 ### Investigar esto: select(''is_device_attr'', ''manufacturer'', ''Tado'')
     accion_salir:
       name: Acción al Salir (Opcional)
