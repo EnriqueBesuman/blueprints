@@ -54,7 +54,8 @@ action:
         {% endif %}
       target:
           entity_id: !input switch_target
-
+          
+- choose:
   - conditions: '{{ light_target is defined and light_target|length > 0 }}'
     sequence:
     - service: >
