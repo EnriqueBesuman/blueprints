@@ -2,7 +2,7 @@ blueprint:
   name: MIO - Luces - Simular amanecer y anochecer
   description: Encender luces al amanecer y apagarlos al anochecer
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/light_sunrise_sunset.yaml
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_sunrise_sunset.yaml
 
   input:
     time_delay:

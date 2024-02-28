@@ -2,7 +2,7 @@ blueprint:
   name: MIO - Dispositivos no disponibles & notificación con la lista
   description: Regularmente comprueba todos los dispositivos y ejecuta alguna acción.
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/edit/main/devices_unavailables_detection-notification.yaml
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/devices_unavailables_detection-notification.yaml
   input:
     hora:
       name: Hora de la comprobación
