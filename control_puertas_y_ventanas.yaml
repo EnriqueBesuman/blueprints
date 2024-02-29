@@ -1,16 +1,16 @@
 blueprint:
-  name: MIO - Control of closing or opening doors or/and windows
-  description: "# Control of closing or opening doors and windows.\n\nFacilitates
-    the execution of actions in the following cases:\n - When the doors or windows is opened
-    (it is possible to delay the action **x seconds**).\n - While the doors
-    or windows remains open (in **x minute** intervals).\n - When the doors
-    or windows closes (it is possible to delay the action **x seconds**).\n"
-  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/door_and_window_control.yaml
+  name: MIO - Control de Puertas y/o Ventanas
+  description: "# Control de cerrado o apertura de puertas y ventanas.\n\nFacilita
+    la ejecución de acciones en los siguientes supuestos:\n  - Cuando se abre la puerta
+    o ventana (es posible retrasar la acción **x segundos**).\n  - Mientras la puerta
+    o ventana permace abierta (en intervalos de **x minutos**).\n  - Cuando la puerta
+    o ventana se cierra (es posible retrasar la acción **x segundos**).\n"
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/control_puertas_y_ventanas.yaml
   domain: automation
   input:
     dispositivo:
-      name: Doors and Windows
-      description: "`required`\n\n Doors and Windows to control"
+      name: Puertas y ventanas
+      description: "`requerido`\n\n Puertas y ventanas a controlar"
       selector:
         entity:
           multiple: false
@@ -28,9 +28,9 @@ blueprint:
             device_class:
             - garage_door
     retraso_abrir:
-      name: Delay opening
-      description: "`optional`\n\n Waiting time **in seconds**, from opening
-        the door or window, until the action is executed"
+      name: Retraso al abrir
+      description: "`opcional`\n\n Tiempo de espera **en segundos**, desde que se abre
+        la puerta o ventana, hasta que ejecuta la acción"
       default: 0
       selector:
         number:
@@ -40,25 +40,29 @@ blueprint:
           mode: box
           step: 1.0
     accion_abrir:
-      name: Opening actions
-      description: "`optional`\n\n Actions to be executed when the doors or/and windows is opened.\n\n
-        For notification-type actions, the following variables are availables to compose the body of the message:\n\n 
-        - ***{{ open_delay }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ close_delay }}***: Timeout
-        **in seconds**, from the moment the door or window is closed, until the action is executed.\n 
-        - ***{{ repetition_interval }}***: Interval **in minutes** between actions when the door or window remains open.\n"
+      name: Acciones al abrir
+      description: "`opcional`\n\n Acciones a ejecutar cuando se abre la puerta o
+        ventana.\n\n\nPara acciones tipo notificación, se ponen a disposición las
+        siguientes variables para componer el cuerpo del mensaje:\n\n  - ***{{ retraso_abrir
+        }}***: Tiempo de espera **en segundos**, desde que se abre la puerta o ventana,
+        hasta que ejecuta la acción.\n  - ***{{ retraso_cerrar }}***: Tiempo de espera
+        **en segundos**, desde que se cierra la puerta o ventana, hasta que ejecuta la
+        acción.\n  - ***{{ intervalo_repeticion }}***: Intervalo **en minutos** entre
+        avisos, cuando la puerta o ventana permanece abierta.\n"
       default: []
       selector:
         action: {}
     aviso_repetitivo:
-      name: Execute recursive action while the door or window is open
-      description: "`required`\n\n Execute action every x time while the door or window remains open."
+      name: Realizar acción recursiva mientras la puerta o ventana esté abierta
+      description: "`requerido`\n\n Ejecutar acción cada x tiempo mientras la puerta
+        o ventana permanezca abierta."
       default: false
       selector:
         boolean: {}
     intervalo_repeticion:
-      name: Interval between actions
-      description: "`optional`\n\n Interval **in minutes** between actions, when the door or window remains open."
+      name: Intervalo entre avisos
+      description: "`opcional`\n\n Intervalo **en minutos** entre avisos, cuando la puerta
+        o ventana permanece abierta."
       default: 5
       selector:
         number:
@@ -68,24 +72,24 @@ blueprint:
           mode: box
           step: 1.0
     accion_repeticion:
-      name: Actions in each repetition
-      description: "`optional`\n\n Actions to be executed while the door or window
-        remains open.\n\nFor notification-type actions, they are availables
-        the following variables to compose the body of the message:\n\n - ***{{
-        open_delay }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ close_delay }}***: Time
-        waiting time **in seconds**, from when the door or window is closed, until
-        executes the action.\n - ***{{ repetition_interval }}***: Interval **in minutes**
-        between actions, when the door or window remains open.\n - ***{{ open_time
-        }}***: Total time **in minutes** since the door was opened or
-        window (not counting the delay in seconds when opening...)."
+      name: Acciones en cada repetición
+      description: "`opcional`\n\n Acciones a ejecutar mientras la puerta o ventana
+        permanezca abierta.\n\n\nPara acciones tipo notificación, se ponen a disposición
+        las siguientes variables para componer el cuerpo del mensaje:\n\n  - ***{{
+        retraso_abrir }}***: Tiempo de espera **en segundos**, desde que se abre la puerta
+        o ventana, hasta que ejecuta la acción.\n  - ***{{ retraso_cerrar }}***: Tiempo
+        de espera **en segundos**, desde que se cierra la puerta o ventana, hasta que
+        ejecuta la acción.\n  - ***{{ intervalo_repeticion }}***: Intervalo **en minutos**
+        entre avisos, cuando la puerta o ventana permanece abierta.\n  - ***{{ tiempo_abierta
+        }}***: Tiempo total **en minutos** transcurrido desde que se abrió la puerta o
+        ventana (sin contar el retraso en segundos al abrir...)."
       default: []
       selector:
         action: {}
     retraso_cerrar:
-      name: Delay closing
-      description: "`opcional`\n\n Waiting time **in seconds**, from closing
-        the door or window, until the action is executed."
+      name: Retraso al cerrar
+      description: "`opcional`\n\n Tiempo de espera **en segundos**, desde que se cierra
+        la puerta o ventana, hasta que ejecuta la acción."
       default: 0
       selector:
         number:
@@ -95,13 +99,15 @@ blueprint:
           mode: box
           step: 1.0
     accion_cerrar:
-      name: Closing actions
-      description: "`opcional`\n\n Actions to be executed when the doors or/and windows is closed.\n\n
-        For notification-type actions, the following variables are availables to compose the body of the message:\n\n 
-        - ***{{ open_delay }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ close_delay }}***: Timeout
-        **in seconds**, from the moment the door or window is closed, until the action is executed.\n 
-        - ***{{ repetition_interval }}***: Interval **in minutes** between actions when the door or window remains open.\n"
+      name: Acciones al cerrar
+      description: "`opcional`\n\n Acciones a ejecutar cuando se cierra la puerta
+        o ventana.\n\n\nPara acciones tipo notificación, se ponen a disposición las
+        siguientes variables para componer el cuerpo del mensaje:\n\n  - ***{{ retraso_abrir
+        }}***: Tiempo de espera **en segundos**, desde que se abre la puerta o ventana,
+        hasta que ejecuta la acción.\n  - ***{{ retraso_cerrar }}***: Tiempo de espera
+        **en segundos**, desde que se cierra la puerta o ventana, hasta que ejecuta la
+        acción.\n  - ***{{ intervalo_repeticion }}***: Intervalo **en minutos** entre
+        avisos, cuando la puerta o ventana permanece abierta.\n"
       default: []
       selector:
         action: {}
