@@ -1,22 +1,10 @@
 blueprint:
   name: MIO - Luces - Simular amanecer y anochecer
-  description: Encender luces al amanecer y apagarlos al anochecer
+  description: Encender o apagar luces al amanecer y al anochecer
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_sunrise_sunset.yaml
 
   input:
-    time_delay:
-      name: Tiempo de espera
-      description: Desfase horario respecto al amanece para el encendido (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
-      default: '01:00:00'
-      selector:
-        time: {}
-    time_offset:
-      name: Tiempo de adelanto
-      description: Desfase horario respecto al anochecer para el apagado (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
-      default: "-1:00:00"
-      selector:
-        time: {}
     light_target:
       name: Luces
       default: []
@@ -25,6 +13,31 @@ blueprint:
           multiple: true
           filter:
           - domain: light
+    time_delay:
+      name: Tiempo de espera
+      description: Desfase horario respecto al amanecer para el encendido o apagado (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
+      default: '01:00:00'
+      selector:
+        time: {}
+    time_offset:
+      name: Tiempo de adelanto
+      description: Desfase horario respecto al anochecer para el apagado o encendido (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
+      default: "-1:00:00"
+      selector:
+        time: {}
+    modo:
+      name: Modo de funcionamiento
+      description: 
+        "`requerido`\n\n
+        En modo diurno, se encederán las luces al amanecer y se apagarán al anochecer.\n
+        En modo nocturno, se encenderan las luces al anochecer, y se apagarán al amanecer."
+      default: diurno
+      selector:
+        select:
+          options:
+          - diurno
+          - nocturno
+          multiple: false
 
 trigger:
   - platform: sun
@@ -37,9 +50,17 @@ trigger:
 action: 
 - service: >
     {% if trigger.event == "sunrise" %}
-      light.turn_on
+      {% if modo == "diurno" %}
+        light.turn_on
+          {% else %}
+        light.turn_off
+      {% endif %}
     {% else %}
-      light.turn_off
+      {% if modo == "diurno" %}
+        light.turn_off
+          {% else %}
+        light.turn_on
+      {% endif %}
     {% endif %}
   target:
       entity_id: !input light_target
