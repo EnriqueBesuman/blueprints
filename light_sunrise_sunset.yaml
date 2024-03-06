@@ -7,6 +7,9 @@ blueprint:
   input:
     light_target:
       name: Luces
+      description:         
+        "`requerido`\n\n
+        Luz o luces a controlar"
       default: []
       selector:
         entity:
@@ -15,13 +18,17 @@ blueprint:
           - domain: light
     time_delay:
       name: Tiempo de espera
-      description: Desfase horario respecto al amanecer para el encendido o apagado (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
+      description: 
+        "`requerido`\n\n
+        Desfase horario respecto al amanecer para el encendido o apagado (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)"
       default: '01:00:00'
       selector:
         time: {}
     time_offset:
       name: Tiempo de adelanto
-      description: Desfase horario respecto al anochecer para el apagado o encendido (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)
+      description: 
+        "`requerido`\n\n
+        Desfase horario respecto al anochecer para el apagado o encendido (Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla)"
       default: "-1:00:00"
       selector:
         time: {}
