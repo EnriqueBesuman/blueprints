@@ -57,17 +57,21 @@ trigger:
 action: 
 - service: >
     {% if trigger.event == "sunrise" %}
+
       {% if modo == "diurno" %}
         light.turn_on
           {% else %}
         light.turn_off
       {% endif %}
+
     {% else %}
+
       {% if modo == "diurno" %}
         light.turn_off
           {% else %}
         light.turn_on
       {% endif %}
+      
     {% endif %}
   target:
       entity_id: !input light_target
