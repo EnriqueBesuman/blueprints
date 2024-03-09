@@ -46,6 +46,8 @@ blueprint:
           - nocturno
           multiple: false
 
+variables:
+  modo: !input modo
 trigger:
   - platform: sun
     event: sunrise
