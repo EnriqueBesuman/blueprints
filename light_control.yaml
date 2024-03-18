@@ -178,7 +178,7 @@ action:
           - condition: template
             value_template: >
               {{ ( not solo_noche) or 
-              (solo_noche and state('sun.sun') == 'below_horizon') }}
+              (solo_noche and states('sun.sun') == 'below_horizon') }}
         then:
           - service: light.turn_{{ states(activador) }}
             data:
