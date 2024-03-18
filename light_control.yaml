@@ -32,6 +32,13 @@ blueprint:
           filter:
           - domain:
             - binary_sensor
+    solo_noche:
+      name: Solo por la noche
+      description: "`required`\n\n 
+        Enciende y apaga las luces, únicamente por la noche (independiente de al amanecer o anochecer)."
+      default: false
+      selector:
+        boolean: {}
     espera:
       name: "Espera encendidas"
       description: ">`optional`\n\n 
@@ -111,8 +118,7 @@ variables:
   anochecer_amanecer: !input anochecer_amanecer
   sensor_luminancia: !input sensor_luminancia
   luminancia: !input luminancia
-  kk: >
-    {{ sensor_luminancia is defined }}
+  solo_noche: !input solo_noche
 
 trigger:
 
@@ -167,8 +173,14 @@ action:
           - activador_off
           - activador_on
     then:
-      - service: light.turn_{{ states(activador) }}
-        data:
-          entity_id: '{{ luces }}'
+      - if:
+          - condition: template
+            value_template: >
+              {{ ( not solo_noche) or 
+              (solo_noche and state('sun.sun') == 'below_horizon') }}
+        then:
+          - service: light.turn_{{ states(activador) }}
+            data:
+              entity_id: '{{ luces }}'
 
 mode: single
