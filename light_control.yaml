@@ -126,8 +126,8 @@ trigger:
 condition:
   - condition: template
     value_template: >
-      {{ (sensor_luminancia is none) or
-        (sensor_luminancia is not none and
+      {{ (sensor_luminancia | length = 0) or
+        (sensor_luminancia | length > 0 and
         states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
 
 action:
