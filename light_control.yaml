@@ -73,11 +73,12 @@ blueprint:
     sensor_luminancia:
       name: Sensor de luminosidad
       description: "`optional`\n\n Entidad de medición de luminosidad."
+      default: []
       selector:
         entity:
           multiple: false
           filter:
-          - domain:
+          - device_class:
             - illuminance
     luminancia:
       name: Nivel máximo de Luminosidad (lux)
