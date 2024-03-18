@@ -1,6 +1,6 @@
 blueprint:
-  name: MIO - Lights control 
-  description: "Turns lights on and off based on the following cases:\n\n
+  name: MIO - Light control 
+  description: "Turns light on and off based on the following cases:\n\n
     > - When a **Binary Sensor** is activated (and based on an optional time offset).\n
     > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
     operating mode **Day or Night**).\n
@@ -10,9 +10,9 @@ blueprint:
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_control.yaml
   input:
     luces:
-      name: Lights
+      name: Light
       description: "`required`\n\n
-        Lights that will turn on or off."
+        Light that will turn on or off."
       selector:
         entity:
           multiple: true
