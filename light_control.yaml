@@ -1,5 +1,5 @@
 blueprint:
-  name: MIO - Lights on and off control 
+  name: MIO - Lights control 
   description: "Turns lights on and off based on the following cases:\n\n
     > - When a **Binary Sensor** is activated (and based on an optional time offset).\n
     > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
