@@ -2,7 +2,8 @@ blueprint:
   name: MIO - Control de Luces
   description: "Enciende y apaga Luces en función de los siguientes supuestos:\n\n
     > - Cuando se activa un **Sensor Binario** (y según un desfase de tiempo opcional).\n
-    > - Cuando **amanece o anochece** (también según un desfase de tiempo opcional).\n
+    > - Y/o Cuando **Amanece o Anochece** (también según un desfase de tiempo opcional, y el
+    modo de funcionamiento **Diurno o Nocturno**).\n
     > - Según un determinado nivel de **luminosidad** (aplica en cualquiera de los casos anteriores).\n\n\n
     **Version**: 1.0.0\n\n**Documentación:** Estamos trabajando en ello, pero creo que es bastante auto-explicativo..."
   domain: automation
@@ -10,7 +11,8 @@ blueprint:
   input:
     luces:
       name: Luces
-      description: "`required`\n\n Luces que se encenderán o apagarán."
+      description: "`required`\n\n
+        Luces que se encenderán o apagarán."
       selector:
         entity:
           multiple: true
@@ -20,7 +22,10 @@ blueprint:
 
     activador:
       name: Activador
-      description: "`optional`\n\n Sensor Binario que apaga o enciende las luces"
+      description: "`optional`\n\n
+        Sensor Binario que apaga o enciende las luces (además de al amanecer o anochecer,
+        si se selecciona)."
+      default: []
       selector:
         entity:
           multiple: false
@@ -28,39 +33,25 @@ blueprint:
           - domain:
             - binary_sensor
     espera:
-      name: Desfase de tiempo
-      description: "`optional`\n\n Tiempo que permanecen encendidas las luces desde la última 
-        desactivación del sensor. ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR BINARIO."
+      name: "Espera encendidas"
+      description: ">`optional`\n\n 
+        >Tiempo que permanecen encendidas las luces desde la última  desactivación del sensor.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR BINARIO."
       default: 00:01:00
 
     anochecer_amanecer:
       name: Considerar anochecer y amanecer
-      description: "`required`\n\n Enciende y apaga las luces, únicamente después del anochecer 
-        y antes del amanecer."
+      description: "`required`\n\n 
+        Enciende y apaga las luces, después del anochecer y antes del amanecer (además de según el sensor binario, si se selecciona)."
       default: false
       selector:
         boolean: {}
-    time_delay:
-      name: Tiempo de espera
-      description: "`optional`\n\n Desfase horario respecto al amanecer para el encendido
-        o apagado (Poner en negativo para adelantar la hora de encendido y en positivo
-        para retrasarla). ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
-      default: 00:01:00
-      selector:
-        time: {}
-    time_offset:
-      name: Tiempo de adelanto
-      description: "`optional`\n\n Desfase horario respecto al anochecer para el
-        apagado o encendido (Poner en negativo para adelantar la hora de encendido
-        y en positivo para retrasarla). ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
-      default: '00:-01:00'
-      selector:
-        time: {}
     modo:
       name: Modo de funcionamiento
-      description: "`optional`\n\n En modo diurno, se encederán las luces al amanecer
-        y se apagarán al anochecer.\n En modo nocturno, se encenderan las luces al
-        anochecer, y se apagarán al amanecer. ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
+      description: ">`optional`\n\n 
+        >En modo diurno, se encederán las luces al amanecer y se apagarán al anochecer.\n 
+        >En modo nocturno, se encenderan las luces al anochecer, y se apagarán al amanecer.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
       default: diurno
       selector:
         select:
@@ -69,10 +60,30 @@ blueprint:
           - nocturno
           multiple: false
           custom_value: false
+    time_delay:
+      name: Tiempo de espera
+      description: ">`optional`\n\n 
+        >Desfase horario respecto al amanecer para el encendido o apagado.\n 
+        >Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
+      default: 00:30:00
+      selector:
+        time: {}
+    time_offset:
+      name: Tiempo de adelanto
+      description: ">`optional`\n\n
+        >Desfase horario respecto al anochecer para el apagado o encendido.\n
+        >Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
+      default: '00:-30:00'
+      selector:
+        time: {}
 
     sensor_luminancia:
       name: Sensor de luminosidad
-      description: "`optional`\n\n Entidad de medición de luminosidad."
+      description: "`optional`\n\n
+        Entidad de medición de luminosidad.\n
+        TIENE EFECTO EN TODOS LOS ESCENARIOS."
       default: []
       selector:
         entity:
@@ -82,8 +93,9 @@ blueprint:
             - illuminance
     luminancia:
       name: Nivel máximo de Luminosidad (lux)
-      description: "`optional`\n\n Nivel máximo de luminosidad (lux). Si la luminosidad medida es 
-        superior, las luces no se encenderán."
+      description: ">`optional`\n\n
+        >Nivel máximo de luminosidad (lux). Si la luminosidad medida es superior, las luces no se encenderán.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR DE LUMINOSIDAD."
       default: 300
       selector:
         number:
@@ -126,7 +138,7 @@ trigger:
 condition:
   - condition: template
     value_template: >
-      {{ (sensor_luminancia | length = 0) or
+      {{ (sensor_luminancia | length == 0) or
         (sensor_luminancia | length > 0 and
         states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
 
