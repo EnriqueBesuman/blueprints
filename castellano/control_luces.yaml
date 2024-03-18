@@ -1,18 +1,18 @@
 blueprint:
-  name: MIO - Lights on and off control 
-  description: "Turns lights on and off based on the following cases:\n\n
-    > - When a **Binary Sensor** is activated (and based on an optional time offset).\n
-    > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
-    operating mode **Day or Night**).\n
-    > - According to a certain level of **luminosity** (applies in any of the previous cases).\n\n\n
-    **Version**: 1.0.0\n\n**Documentation:** We're working on it, but I think it's pretty self-explanatory..."
+  name: MIO - Control de Luces
+  description: "Enciende y apaga Luces en función de los siguientes supuestos:\n\n
+    > - Cuando se activa un **Sensor Binario** (y según un desfase de tiempo opcional).\n
+    > - Y/o Cuando **Amanece o Anochece** (también según un desfase de tiempo opcional, y el
+    modo de funcionamiento **Diurno o Nocturno**).\n
+    > - Según un determinado nivel de **luminosidad** (aplica en cualquiera de los casos anteriores).\n\n\n
+    **Version**: 1.0.0\n\n**Documentación:** Estamos trabajando en ello, pero creo que es bastante auto-explicativo..."
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_control.yaml
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/castellano/light_control.yaml
   input:
     luces:
-      name: Lights
+      name: Luces
       description: "`required`\n\n
-        Lights that will turn on or off."
+        Luces que se encenderán o apagarán."
       selector:
         entity:
           multiple: true
@@ -21,10 +21,10 @@ blueprint:
             - light
 
     activador:
-      name: Activator
+      name: Activador
       description: "`optional`\n\n
-        Binary sensor that turns lights on or off (in addition to dawn or dusk,
-        if selected)."
+        Sensor Binario que apaga o enciende las luces (además de al amanecer o anochecer,
+        si se selecciona)."
       default: []
       selector:
         entity:
@@ -33,65 +33,65 @@ blueprint:
           - domain:
             - binary_sensor
     solo_noche:
-      name: Only at night
+      name: Solo por la noche
       description: ">`optional`\n\n 
-        >Turns the lights on and off, only at night (regardless of dawn or dusk).\n
-        >ONLY HAS EFFECT IF A BINARY SENSOR IS SELECTED."
+        >Enciende y apaga las luces, únicamente por la noche (independiente de al amanecer o anochecer).\n
+        >ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR BINARIO."
       default: false
       selector:
         boolean: {}
     espera:
-      name: "Waiting time on"
+      name: "Espera encendidas"
       description: ">`optional`\n\n 
-        >Time the lights remain on since the sensor was last deactivated.\n
-        >ONLY HAS EFFECT IF A BINARY SENSOR IS SELECTED."
+        >Tiempo que permanecen encendidas las luces desde la última  desactivación del sensor.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR BINARIO."
       default: 00:01:00
 
     anochecer_amanecer:
-      name: Dusk and dawn
+      name: Considerar anochecer y amanecer
       description: "`required`\n\n 
-        Turns lights on and off, after dusk and before dawn (in addition to binary sensor, if selected)."
+        Enciende y apaga las luces, después del anochecer y antes del amanecer (además de según el sensor binario, si se selecciona)."
       default: false
       selector:
         boolean: {}
     modo:
-      name: Operating mode
+      name: Modo de funcionamiento
       description: ">`optional`\n\n 
-        >In daytime mode, the lights will turn on at dawn and turn off at dusk.\n
-        >In night mode, the lights will turn on at dusk, and turn off at dawn.\n
-        >ONLY HAS EFFECT IF DUMP-DAWN IS CONSIDERED"
-      default: day
+        >En modo diurno, se encederán las luces al amanecer y se apagarán al anochecer.\n 
+        >En modo nocturno, se encenderan las luces al anochecer, y se apagarán al amanecer.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
+      default: diurno
       selector:
         select:
           options:
-          - day
-          - night
+          - diurno
+          - nocturno
           multiple: false
           custom_value: false
     time_delay:
-      name: Wait time
+      name: Tiempo de espera
       description: ">`optional`\n\n 
-        >Time lag with respect to sunrise for turning on or off.\n
-        >Set negative to advance the start time and positive to delay it.\n
-        >ONLY HAS EFFECT IF DUMP-DAWN IS CONSIDERED"
+        >Desfase horario respecto al amanecer para el encendido o apagado.\n 
+        >Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
       default: 00:30:00
       selector:
         time: {}
     time_offset:
-      name: Advance time
+      name: Tiempo de adelanto
       description: ">`optional`\n\n
-        >Time lag with respect to dusk for turning off or on.\n
-        >Set negative to advance the start time and positive to delay it.\n
-        >ONLY HAS EFFECT IF DUMP-DAWN IS CONSIDERED"
+        >Desfase horario respecto al anochecer para el apagado o encendido.\n
+        >Poner en negativo para adelantar la hora de encendido y en positivo para retrasarla.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE CONSIDERA EL ANOCHECER-AMANECER"
       default: '00:-30:00'
       selector:
         time: {}
 
     sensor_luminancia:
-      name: Illuminance sensor
+      name: Sensor de luminosidad
       description: "`optional`\n\n
-        Illuminance measurement entity.\n
-        IT HAS EFFECT IN ALL SCENARIOS."
+        Entidad de medición de luminosidad.\n
+        TIENE EFECTO EN TODOS LOS ESCENARIOS."
       default: []
       selector:
         entity:
@@ -100,10 +100,10 @@ blueprint:
           - device_class:
             - illuminance
     luminancia:
-      name: Maximum illuminance level (lux)
+      name: Nivel máximo de Luminosidad (lux)
       description: ">`optional`\n\n
-        >Maximum illuminance level (lux). If the measured illuminance is higher, the lights will not turn on.\n
-        >ONLY HAS EFFECT IF A ILLUMINANCE SENSOR IS SELECTED."
+        >Nivel máximo de luminosidad (lux). Si la luminosidad medida es superior, las luces no se encenderán.\n
+        >ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR DE LUMINOSIDAD."
       default: 300
       selector:
         number:
@@ -156,7 +156,7 @@ action:
         id:
           - sunrise
     then:
-      - service: light.turn_{{ iif (modo == "day", "on", "off") }}
+      - service: light.turn_{{ iif (modo == "diurno", "on", "off") }}
         target:
           entity_id: !input luces
   - if:
@@ -164,7 +164,7 @@ action:
         id:
           - sunset
     then:
-      - service: light.turn_{{ iif (modo == "day", "off", "on") }}
+      - service: light.turn_{{ iif (modo == "diurno", "off", "on") }}
         target:
           entity_id: !input luces
 
