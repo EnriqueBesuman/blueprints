@@ -138,7 +138,7 @@ action:
     then:
       - service: light.turn_{{ iif (modo == "diurno", "on", "off") }}
         target:
-          entity_id: !input light_target
+          entity_id: !input luces
   - if:
       - condition: trigger
         id:
@@ -146,7 +146,7 @@ action:
     then:
       - service: light.turn_{{ iif (modo == "diurno", "off", "on") }}
         target:
-          entity_id: !input light_target
+          entity_id: !input luces
 
   - if:
       - condition: trigger
