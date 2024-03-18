@@ -34,8 +34,9 @@ blueprint:
             - binary_sensor
     solo_noche:
       name: Solo por la noche
-      description: "`required`\n\n 
-        Enciende y apaga las luces, únicamente por la noche (independiente de al amanecer o anochecer)."
+      description: ">`required`\n\n 
+        >Enciende y apaga las luces, únicamente por la noche (independiente de al amanecer o anochecer).\n
+        >ÚNICAMENTE TIENE EFECTO SI SE SELECCIONA UN SENSOR BINARIO."
       default: false
       selector:
         boolean: {}
