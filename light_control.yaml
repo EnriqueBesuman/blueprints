@@ -36,7 +36,6 @@ blueprint:
       description: ">`optional`\n\n
         >Binary sensor that turns lights on or off (in addition to dawn or dusk, if selected)."
       default: 
-      disable: true
       selector:
         entity:
           multiple: false
