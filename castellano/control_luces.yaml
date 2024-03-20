@@ -115,6 +115,7 @@ blueprint:
         >El ID de etiqueta NFC.\n
         >Se puede encontrar en Configuración --> Etiquetas NFC y haciendo clic en la etiqueta NFC elegida.
         >OBLIGATORIO SI SE ACTIVA EL **MODO NFC**."
+      default: []
       selector:
         text:
           type: text

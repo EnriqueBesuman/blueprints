@@ -114,6 +114,7 @@ blueprint:
         >The tag ID of your NFC trigger.\n
         >Can be found under Settings --> NFC Tags and then click on the NFC Tag you want to choose.
         >MANDATORY IF **NFC MODE** IS ACTIVATED."
+      default: []
       selector:
         text:
           type: text
