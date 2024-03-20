@@ -114,7 +114,7 @@ blueprint:
         >The tag ID of your NFC trigger.\n
         >Can be found under Settings --> NFC Tags and then click on the NFC Tag you want to choose.
         >MANDATORY IF **NFC MODE** IS ACTIVATED."
-      default: Id_tag_NFC
+      default: 
       selector:
         text:
           type: text
@@ -125,7 +125,7 @@ blueprint:
       description: "`optional`\n\n
         Illuminance measurement entity.\n
         IT HAS EFFECT IN ALL SCENARIOS."
-      default: []
+      default: 
       selector:
         entity:
           multiple: false
