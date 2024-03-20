@@ -110,7 +110,7 @@ blueprint:
       default: false
       selector:
         boolean: {}
-    tag-id:
+    tag_id:
       name: Etiquetas NFC
       description: ">`optional`\n\n
         >El ID de etiqueta NFC.\n
@@ -166,7 +166,7 @@ variables:
 
 
   activador: !input activador
-  etiquetas_nfc: !input etiquetas_nfc
+  tag_id: !input tag_id
   luces: !input luces
   modo_sensor: !input modo_sensor
   modo_natural: !input modo_natural
@@ -200,7 +200,8 @@ trigger:
   id: sunset
 
 - platform: tag
-  tag_id: !input etiquetas_nfc
+  tag_id: !input tag_id
+  for: !input espera_nfc
   id: nfc
 
 
@@ -211,10 +212,13 @@ condition:
         (sensor_luminancia | length > 0 and
         states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
 
+
 action:
 
   - if:
-      - condition: (modo_sensor)
+      - condition: template
+        value_template: >
+          {{ (modo_sensor) }}
     then:
       - if:
           - condition: trigger
@@ -234,7 +238,9 @@ action:
               entity_id: !input luces
 
   - if:
-      - condition: (modo_natural)
+      - condition: template
+        value_template: >
+          {{ (modo_natural) }}
     then:
       - if:
           - condition: trigger
@@ -253,7 +259,9 @@ action:
                   entity_id: '{{ luces }}'
 
   - if:
-      - condition: (modo_nfc)
+      - condition: template
+        value_template: >
+          {{ (modo_nfc) }}
     then:
       - if:
           - condition: trigger
