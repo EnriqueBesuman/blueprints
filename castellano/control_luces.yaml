@@ -275,6 +275,7 @@ action:
                   {{ ( not solo_noche_nfc) or 
                   (solo_noche_nfc and states('sun.sun') == 'below_horizon') }}
             then:
+              - delay: !input espera_nfc
               - service: light.turn_toggle
                 data:
                   entity_id: '{{ luces }}'

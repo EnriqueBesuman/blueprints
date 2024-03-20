@@ -199,7 +199,6 @@ trigger:
 
 - platform: tag
   tag_id: !input tag_id
-  for: !input espera_nfc
   id: nfc
 
 
@@ -273,6 +272,7 @@ action:
                   {{ ( not solo_noche_nfc) or 
                   (solo_noche_nfc and states('sun.sun') == 'below_horizon') }}
             then:
+              - delay: !input espera_nfc
               - service: light.toggle
                 data:
                   entity_id: '{{ luces }}'
