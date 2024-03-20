@@ -213,27 +213,6 @@ condition:
 
 action:
 
-  - if:
-      - condition: template
-        value_template: >
-          {{ (modo_natural) }}
-    then:
-      - if:
-          - condition: trigger
-            id:
-              - sunrise
-        then:
-          - service: light.turn_{{ iif (modo == "dia", "on", "off") }}
-            target:
-              entity_id: !input luces
-      - if:
-          - condition: trigger
-            id:
-              - sunset
-        then:
-          - service: light.turn_{{ iif (modo == "dia", "off", "on") }}
-            target:
-              entity_id: !input luces
 
   - if:
       - condition: template
@@ -255,6 +234,28 @@ action:
               - service: light.turn_{{ states(activador) }}
                 data:
                   entity_id: '{{ luces }}'
+
+  - if:
+      - condition: template
+        value_template: >
+          {{ (modo_natural) }}
+    then:
+      - if:
+          - condition: trigger
+            id:
+              - sunrise
+        then:
+          - service: light.turn_{{ iif (modo == "dia", "on", "off") }}
+            target:
+              entity_id: !input luces
+      - if:
+          - condition: trigger
+            id:
+              - sunset
+        then:
+          - service: light.turn_{{ iif (modo == "dia", "off", "on") }}
+            target:
+              entity_id: !input luces
 
   - if:
       - condition: template

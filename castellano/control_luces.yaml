@@ -26,7 +26,7 @@ blueprint:
 
 
     modo_sensor:
-      name: Activar el **Modo Sensor**.
+      name: ACTIVAR EL **MODO SENSOR**.
       description: "`required`\n\n 
         Enciende y apaga las luces, según el activador **Sensor Binario** seleccionado."
       default: false
@@ -61,7 +61,7 @@ blueprint:
 
 
     modo_natural:
-      name: Activar el modo **Anochecer Amanecer**.
+      name: ACTIVAR EL **MODO NATURAL**.
       description: "`required`\n\n 
         Enciende y/o apaga las luces, después del anochecer y antes del amanecer."
       default: false
@@ -104,14 +104,14 @@ blueprint:
 
 
     modo_nfc:
-      name: Activar el **Modo NFC**.
+      name: ACTIVAR EL **MODO NFC**.
       description: "`required`\n\n 
         Enciende y apaga las luces, según una o varias **Etiquetas NFC** seleccionadas."
       default: false
       selector:
         boolean: {}
     tag_id:
-      name: Etiquetas NFC
+      name: Id Etiqueta
       description: ">`optional`\n\n
         >El ID de etiqueta NFC.\n
         >Se puede encontrar en Configuración --> Etiquetas NFC y haciendo clic en la etiqueta NFC elegida.
@@ -215,10 +215,32 @@ condition:
 
 action:
 
+
   - if:
       - condition: template
         value_template: >
           {{ (modo_sensor) }}
+    then:
+      - if:
+          - condition: trigger
+            id:
+              - activador_off
+              - activador_on
+        then:
+          - if:
+              - condition: template
+                value_template: >
+                  {{ ( not solo_noche_sensor) or 
+                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
+            then:
+              - service: light.turn_{{ states(activador) }}
+                data:
+                  entity_id: '{{ luces }}'
+
+  - if:
+      - condition: template
+        value_template: >
+          {{ (modo_natural) }}
     then:
       - if:
           - condition: trigger
@@ -240,27 +262,6 @@ action:
   - if:
       - condition: template
         value_template: >
-          {{ (modo_natural) }}
-    then:
-      - if:
-          - condition: trigger
-            id:
-              - activador_off
-              - activador_on
-        then:
-          - if:
-              - condition: template
-                value_template: >
-                  {{ ( not solo_noche_sensor) or 
-                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
-            then:
-              - service: light.turn_{{ states(activador) }}
-                data:
-                  entity_id: '{{ luces }}'
-
-  - if:
-      - condition: template
-        value_template: >
           {{ (modo_nfc) }}
     then:
       - if:
@@ -271,8 +272,8 @@ action:
           - if:
               - condition: template
                 value_template: >
-                  {{ ( not solo_noche_sensor) or 
-                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
+                  {{ ( not solo_noche_nfc) or 
+                  (solo_noche_nfc and states('sun.sun') == 'below_horizon') }}
             then:
               - service: light.turn_toggle
                 data:
