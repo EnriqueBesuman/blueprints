@@ -4,8 +4,7 @@ blueprint:
     > - Cuando se activa un **Sensor Binario** (y según un desfase de tiempo opcional).\n
     > - Y/o Cuando **Amanece o Anochece** (también según un desfase de tiempo opcional, y el
     modo de funcionamiento **Diurno o Nocturno**).\n
-    > - Y/o Cuando se lee una etiqueta NFC (también según un desfase de tiempo opcional, y el
-    modo de funcionamiento **Diurno o Nocturno**).\n
+    > - Y/o Cuando se lee una etiqueta NFC.\n
     > - Según un determinado nivel de **luminosidad** (aplica en cualquiera de los casos anteriores).\n\n\n
     **Version**: 1.0.0\n\n**Documentación:** Estamos trabajando en ello, pero creo que es bastante auto-explicativo..."
   domain: automation
@@ -119,20 +118,6 @@ blueprint:
       selector:
         text:
           type: text
-    solo_noche_nfc:
-      name: Solo por la noche
-      description: ">`optional`\n\n 
-        >Enciende y apaga las luces, únicamente por la noche.\n
-        >OBLIGATORIO SI SE ACTIVA EL **MODO NFC**."
-      default: false
-      selector:
-        boolean: {}
-    espera_nfc:
-      name: "Espera encendidas"
-      description: ">`optional`\n\n 
-        >Tiempo que permanecen encendidas las luces desde la última **lectura** de la etiqueta NFC.\n
-        >OBLIGATORIO SI SE ACTIVA EL **MODO NFC**."
-      default: 00:01:00
 
 
     sensor_luminancia:
@@ -173,9 +158,6 @@ variables:
   modo_nfc: !input modo_nfc
   sensor_luminancia: !input sensor_luminancia
   luminancia: !input luminancia
-  solo_noche_sensor: !input solo_noche_sensor
-  solo_noche_nfc: !input solo_noche_nfc
-  espera_nfc: !input espera_nfc
 
 
 trigger:
@@ -269,16 +251,9 @@ action:
             id:
               - nfc
         then:
-          - if:
-              - condition: template
-                value_template: >
-                  {{ ( not solo_noche_nfc) or 
-                  (solo_noche_nfc and states('sun.sun') == 'below_horizon') }}
-            then:
-              - delay: !input espera_nfc
-              - service: light.turn_toggle
-                data:
-                  entity_id: '{{ luces }}'
+          - service: light.turn_toggle
+            data:
+              entity_id: '{{ luces }}'
 
 
 mode: single

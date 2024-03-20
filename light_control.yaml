@@ -4,8 +4,7 @@ blueprint:
     > - When a **Binary Sensor** is activated (and based on an optional time offset).\n
     > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
     operating mode **Day or Night**).\n
-    > - And/or When an NFC tag is read (also based on an optional time lag, and the
-    operating mode **Day or Night**).\n
+    > - And/or When an NFC tag is read.\n
     > - According to a certain level of **luminosity** (applies in any of the previous cases).\n\n\n
     **Version**: 1.0.1\n\n**Documentation:** We're working on it, but I think it's pretty self-explanatory..."
   domain: automation
@@ -118,20 +117,7 @@ blueprint:
       selector:
         text:
           type: text
-    solo_noche_nfc:
-      name: Alone at night
-      description: ">`optional`\n\n 
-        >Turns the lights on and off, only at night.\n
-        >MANDATORY IF **NFC MODE** IS ACTIVATED."
-      default: false
-      selector:
-        boolean: {}
-    espera_nfc:
-      name: "Wait on"
-      description: ">`optional`\n\n 
-        >Time the lights remain on since the last **read** of the NFC tag.\n
-        >MANDATORY IF **NFC MODE** IS ACTIVATED."
-      default: 00:01:00
+
 
     sensor_luminancia:
       name: Illuminance sensor
@@ -172,8 +158,6 @@ variables:
   sensor_luminancia: !input sensor_luminancia
   luminancia: !input luminancia
   solo_noche_sensor: !input solo_noche_sensor
-  solo_noche_nfc: !input solo_noche_nfc
-  espera_nfc: !input espera_nfc
 
 
 trigger:
@@ -267,16 +251,9 @@ action:
             id:
               - nfc
         then:
-          - if:
-              - condition: template
-                value_template: >
-                  {{ ( not solo_noche_nfc) or 
-                  (solo_noche_nfc and states('sun.sun') == 'below_horizon') }}
-            then:
-              - delay: !input espera_nfc
-              - service: light.toggle
-                data:
-                  entity_id: '{{ luces }}'
+          - service: light.toggle
+            data:
+              entity_id: '{{ luces }}'
 
 
 mode: single
