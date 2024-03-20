@@ -109,18 +109,15 @@ blueprint:
       default: false
       selector:
         boolean: {}
-    etiquetas_nfc:
-      name: NFC tags
+    tag-id:
+      name: Tag id
       description: ">`optional`\n\n
-        >NFC tags that alternately turn lights on and off.
+        >The tag ID of your NFC trigger.\n
+        >Can be found under Settings --> NFC Tags and then click on the NFC Tag you want to choose.
         >MANDATORY IF **NFC MODE** IS ACTIVATED."
-      default: []
       selector:
-        entity:
-          multiple: true
-          filter:
-          - domain:
-            - tag
+        text:
+          type: text
     solo_noche_nfc:
       name: Alone at night
       description: ">`optional`\n\n 
@@ -264,8 +261,8 @@ action:
           - if:
               - condition: template
                 value_template: >
-                  {{ ( not solo_noche_sensor) or 
-                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
+                  {{ ( not solo_noche_nfc) or 
+                  (solo_noche_nfc and states('sun.sun') == 'below_horizon') }}
             then:
               - service: light.turn_toggle
                 data:
