@@ -175,6 +175,7 @@ variables:
   luminancia: !input luminancia
   solo_noche_sensor: !input solo_noche_sensor
   solo_noche_nfc: !input solo_noche_nfc
+  espera_nfc: !input espera_nfc
 
 
 trigger:
@@ -201,7 +202,6 @@ trigger:
 
 - platform: tag
   tag_id: !input tag_id
-  for: !input espera_nfc
   id: nfc
 
 
