@@ -77,7 +77,7 @@ blueprint:
       selector:
         select:
           options:
-          - lavel: diurno
+          - label: diurno
             value: dia
           - label: nocturno
             value: noche
@@ -110,18 +110,15 @@ blueprint:
       default: false
       selector:
         boolean: {}
-    etiquetas_nfc:
+    tag-id:
       name: Etiquetas NFC
       description: ">`optional`\n\n
-        >Etiquetas NFC que apagan o encienden las luces alternativamente.
+        >El ID de etiqueta NFC.\n
+        >Se puede encontrar en Configuración --> Etiquetas NFC y haciendo clic en la etiqueta NFC elegida.
         >OBLIGATORIO SI SE ACTIVA EL **MODO NFC**."
-      default: []
       selector:
-        entity:
-          multiple: true
-          filter:
-          - domain:
-            - tag
+        text:
+          type: text
     solo_noche_nfc:
       name: Solo por la noche
       description: ">`optional`\n\n 

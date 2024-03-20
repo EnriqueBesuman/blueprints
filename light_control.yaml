@@ -76,9 +76,9 @@ blueprint:
       selector:
         select:
           options:
-          - lavel: day
+          - label: day
             value: dia
-          - lavel: night
+          - label: night
             value: noche
           multiple: false
           custom_value: false
