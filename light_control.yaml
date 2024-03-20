@@ -7,7 +7,7 @@ blueprint:
     > - And/or When an NFC tag is read (also based on an optional time lag, and the
     operating mode **Day or Night**).\n
     > - According to a certain level of **luminosity** (applies in any of the previous cases).\n\n\n
-    **Version**: 1.0.0\n\n**Documentation:** We're working on it, but I think it's pretty self-explanatory..."
+    **Version**: 1.0.1\n\n**Documentation:** We're working on it, but I think it's pretty self-explanatory..."
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_control.yaml
 
