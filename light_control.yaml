@@ -4,10 +4,14 @@ blueprint:
     > - When a **Binary Sensor** is activated (and based on an optional time offset).\n
     > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
     operating mode **Day or Night**).\n
+    > - And/or When an NFC tag is read (also based on an optional time lag, and the
+    operating mode **Day or Night**).\n
     > - According to a certain level of **luminosity** (applies in any of the previous cases).\n\n\n
     **Version**: 1.0.0\n\n**Documentation:** We're working on it, but I think it's pretty self-explanatory..."
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_control.yaml
+
+
   input:
     luces:
       name: Light
@@ -20,11 +24,18 @@ blueprint:
           - domain:
             - light
 
+
+    modo_sensor:
+      name: Activate **Sensor Mode**.
+      description: "`required`\n\n 
+        Turns the lights on and off, depending on the **Binary Sensor** activator selected."
+      default: false
+      selector:
+        boolean: {}
     activador:
       name: Activator
-      description: "`optional`\n\n
-        Binary sensor that turns lights on or off (in addition to dawn or dusk,
-        if selected)."
+      description: ">`optional`\n\n
+        >Binary sensor that turns lights on or off (in addition to dawn or dusk, if selected)."
       default: []
       selector:
         entity:
@@ -32,7 +43,7 @@ blueprint:
           filter:
           - domain:
             - binary_sensor
-    solo_noche:
+    solo_noche_sensor:
       name: Only at night
       description: ">`optional`\n\n 
         >Turns the lights on and off, only at night (regardless of dawn or dusk).\n
@@ -40,14 +51,15 @@ blueprint:
       default: false
       selector:
         boolean: {}
-    espera:
+    espera_sensor:
       name: "Waiting time on"
       description: ">`optional`\n\n 
         >Time the lights remain on since the sensor was last deactivated.\n
         >ONLY HAS EFFECT IF A BINARY SENSOR IS SELECTED."
       default: 00:01:00
 
-    anochecer_amanecer:
+
+    modo_natural:
       name: Dusk and dawn
       description: "`required`\n\n 
         Turns lights on and off, after dusk and before dawn (in addition to binary sensor, if selected)."
@@ -64,8 +76,10 @@ blueprint:
       selector:
         select:
           options:
-          - day
-          - night
+          - lavel: day
+            value: dia
+          - lavel: night
+            value: noche
           multiple: false
           custom_value: false
     time_delay:
@@ -86,6 +100,41 @@ blueprint:
       default: '00:-30:00'
       selector:
         time: {}
+
+
+    modo_nfc:
+      name: Activate **NFC Mode**.
+      description: "`required`\n\n 
+        Turns the lights on and off, depending on one or more selected **NFC Tags**."
+      default: false
+      selector:
+        boolean: {}
+    etiquetas_nfc:
+      name: NFC tags
+      description: ">`optional`\n\n
+        >NFC tags that alternately turn lights on and off.
+        >MANDATORY IF **NFC MODE** IS ACTIVATED."
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+          - domain:
+            - tag
+    solo_noche_nfc:
+      name: Alone at night
+      description: ">`optional`\n\n 
+        >Turns the lights on and off, only at night.\n
+        >MANDATORY IF **NFC MODE** IS ACTIVATED."
+      default: false
+      selector:
+        boolean: {}
+    espera_nfc:
+      name: "Wait on"
+      description: ">`optional`\n\n 
+        >Time the lights remain on since the last **read** of the NFC tag.\n
+        >MANDATORY IF **NFC MODE** IS ACTIVATED."
+      default: 00:01:00
 
     sensor_luminancia:
       name: Illuminance sensor
@@ -112,26 +161,35 @@ blueprint:
           unit_of_measurement: lx
           mode: box
           step: 1
+
+
 variables:
 
+
   activador: !input activador
+  etiquetas_nfc: !input etiquetas_nfc
   luces: !input luces
-  anochecer_amanecer: !input anochecer_amanecer
+  modo_sensor: !input modo_sensor
+  modo_natural: !input modo_natural
+  modo_nfc: !input modo_nfc
   sensor_luminancia: !input sensor_luminancia
   luminancia: !input luminancia
-  solo_noche: !input solo_noche
+  solo_noche_sensor: !input solo_noche_sensor
+  solo_noche_nfc: !input solo_noche_nfc
+
 
 trigger:
 
-- platform: state
-  entity_id: !input activador
-  to: 'off'
-  for: !input espera
-  id: activador_off
+
 - platform: state
   entity_id: !input activador
   to: 'on'
   id: activador_on
+- platform: state
+  entity_id: !input activador
+  to: 'off'
+  for: !input espera_sensor
+  id: activador_off
 
 - platform: sun
   event: sunrise
@@ -141,6 +199,11 @@ trigger:
   event: sunset
   offset: !input time_offset
   id: sunset
+
+- platform: tag
+  tag_id: !input etiquetas_nfc
+  id: nfc
+
 
 condition:
   - condition: template
@@ -152,36 +215,61 @@ condition:
 action:
 
   - if:
-      - condition: trigger
-        id:
-          - sunrise
-    then:
-      - service: light.turn_{{ iif (modo == "day", "on", "off") }}
-        target:
-          entity_id: !input luces
-  - if:
-      - condition: trigger
-        id:
-          - sunset
-    then:
-      - service: light.turn_{{ iif (modo == "day", "off", "on") }}
-        target:
-          entity_id: !input luces
-
-  - if:
-      - condition: trigger
-        id:
-          - activador_off
-          - activador_on
+      - condition: (modo_sensor)
     then:
       - if:
-          - condition: template
-            value_template: >
-              {{ ( not solo_noche) or 
-              (solo_noche and states('sun.sun') == 'below_horizon') }}
+          - condition: trigger
+            id:
+              - sunrise
         then:
-          - service: light.turn_{{ states(activador) }}
-            data:
-              entity_id: '{{ luces }}'
+          - service: light.turn_{{ iif (modo == "dia", "on", "off") }}
+            target:
+              entity_id: !input luces
+      - if:
+          - condition: trigger
+            id:
+              - sunset
+        then:
+          - service: light.turn_{{ iif (modo == "dia", "off", "on") }}
+            target:
+              entity_id: !input luces
+
+  - if:
+      - condition: (modo_natural)
+    then:
+      - if:
+          - condition: trigger
+            id:
+              - activador_off
+              - activador_on
+        then:
+          - if:
+              - condition: template
+                value_template: >
+                  {{ ( not solo_noche_sensor) or 
+                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
+            then:
+              - service: light.turn_{{ states(activador) }}
+                data:
+                  entity_id: '{{ luces }}'
+
+  - if:
+      - condition: (modo_nfc)
+    then:
+      - if:
+          - condition: trigger
+            id:
+              - nfc
+        then:
+          - if:
+              - condition: template
+                value_template: >
+                  {{ ( not solo_noche_sensor) or 
+                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
+            then:
+              - service: light.turn_toggle
+                data:
+                  entity_id: '{{ luces }}'
+
 
 mode: single
