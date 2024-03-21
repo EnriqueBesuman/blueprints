@@ -35,7 +35,7 @@ blueprint:
       name: Activator
       description: ">`optional`\n\n
         >Binary sensor that turns lights on or off (in addition to dawn or dusk, if selected)."
-      default: 
+      default: []
       selector:
         entity:
           multiple: false
@@ -125,7 +125,7 @@ blueprint:
       description: "`optional`\n\n
         Illuminance measurement entity.\n
         IT HAS EFFECT IN ALL SCENARIOS."
-      default: 
+      default: []
       selector:
         entity:
           multiple: false
