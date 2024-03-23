@@ -159,6 +159,7 @@ variables:
   sensor_luminancia: !input sensor_luminancia
   luminancia: !input luminancia
   solo_noche_sensor: !input solo_noche_sensor
+  modo: !input modo
 
 
 trigger:
