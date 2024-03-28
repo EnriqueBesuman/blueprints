@@ -18,12 +18,23 @@ blueprint:
     con los posibles estados (valores de ***'hvac_mode'***) en los que puede estar tu climatizador, para guardar el estado anterior,
     y poder restaurarlo cuando se cierren las ventanas.\n\n
 
-    **Version**: 2.0.0\n
+    **Version**: 2.1.0\n
     
     **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_windows_control.yaml
+
   input:
+
+    climatizador:
+      name: Entidad de Climatización
+      description: El climatizador que se contrará con las ventanas y/o puertas.
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain: climate
+
     ventanas:
       name: Ventanas o Puertas
       description: La ventana o puerta que controla el climatizador. Si hay varios, es
@@ -33,10 +44,11 @@ blueprint:
           multiple: false
           filter:
           - domain: binary_sensor
-#            device_class: window
-#          - domain: binary_sensor
-#            device_class: door
+            device_class: window
+          - domain: binary_sensor
+            device_class: door
 #          - domain: group
+
     retraso_abrir:
       name: Retraso al Abrir
       description: Tiempo de espera en segundos, desde que se abre la ventana, hasta que se apaga el climatizador
@@ -44,41 +56,37 @@ blueprint:
       selector:
         number:
           min: 0.0
-          max: 120.0
+          max: 3600.0
           unit_of_measurement: seconds
           mode: box
           step: 1.0
-    retraso_cerrar:
-      name: Retraso al Cerrar
-      description: Tiempo de espera en segundos, desde que se cierra la ventana, hasta que se enciende el climatizador
-      default: 30
-      selector:
-        number:
-          min: 0.0
-          max: 300.0
-          unit_of_measurement: seconds
-          mode: box
-          step: 1.0
-    climatizador:
-      name: Entidad de Climatización
-      description: El climatizador que se contrará con las ventanas y/o puertas.
-      selector:
-        entity:
-          multiple: false
-          filter:
-          - domain: climate
+
     accion_abrir:
       name: Acción al Abrir (Opcional)
       description: Acción a ejecutar cuando se abren las ventanas y/o puertas (p.e. enviar una notificación)
       default: []
       selector:
         action: {}
+
+    retraso_cerrar:
+      name: Retraso al Cerrar
+      description: Tiempo de espera en segundos, desde que se cierra la ventana, hasta que se enciende el climatizador
+      default: 10
+      selector:
+        number:
+          min: 0.0
+          max: 3600.0
+          unit_of_measurement: seconds
+          mode: box
+          step: 1.0
+
     accion_cerrar:
       name: Acción al Cerrar (Opcional)
       description: Acción a ejecutar cuando se cierran las ventanas y/o puertas (p.e. enviar una notificación)
       default: []
       selector:
         action: {}
+
     modo_anterior:
       name: Modo Anterior
       description: Selector para almacenar el modo en el que se encontraba el climatizador antes de apagarlo.
@@ -90,6 +98,7 @@ blueprint:
           - domain: input_select
 
 variables:
+
   accion_abrir: !input accion_abrir
   accion_cerrar: !input accion_cerrar
   climatizador: !input climatizador
@@ -98,41 +107,64 @@ variables:
 mode: single
 
 trigger:
+
 - platform: state
   entity_id: !input ventanas
   from: 'off'
   to: 'on'
   for: !input retraso_abrir
-
+  id: abriendo
+  
+- platform: state
+  entity_id: !input ventanas
+  from: 'on'
+  to: 'off'
+  for: !input retraso_cerrar
+  id: cerrando
 
 action:
-- service: input_select.set_options
-  target:
-    entity_id: !input modo_anterior
-  data:
-    options: '{{ states(climatizador) }}'
-- condition: not
-  conditions:
-  - condition: state
-    entity_id: !input climatizador
-    state: 'off'
-- service: climate.turn_off
-  target:
-    entity_id: !input climatizador
-- choose:
-  - conditions: '{{ accion_abrir is defined and accion_abrir|length > 0 }}'
-    sequence: !input accion_abrir
-- wait_for_trigger:
-  - platform: state
-    entity_id: !input ventanas
-    to: 'off'
-  continue_on_timeout: false
-- delay: !input retraso_cerrar
-- choose:
-  - conditions: '{{ accion_cerrar is defined and accion_cerrar|length > 0 }}'
-    sequence: !input accion_cerrar
-- service: climate.set_hvac_mode
-  target:
-    entity_id: !input climatizador
-  data:
-    hvac_mode: '{{ states(modo_anterior) }}'
+
+  - if:
+      - condition: trigger
+        id:
+          - abriendo
+    then:
+      - service: input_select.set_options
+        target:
+          entity_id: !input modo_anterior
+        data:
+          options: '{{ states(climatizador) }}'
+      - if: 
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: !input climatizador
+              state: 'off'
+        then:
+          - service: climate.turn_off
+            target:
+              entity_id: !input climatizador
+          - choose:
+            - conditions: '{{ accion_abrir is defined and accion_abrir|length > 0 }}'
+              sequence: !input accion_abrir
+
+  - if:
+      - condition: trigger
+        id:
+          - cerrando
+    then:
+      - if: 
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: !input modo_anterior
+              state: 'off'
+        then:
+          - service: climate.set_hvac_mode
+            target:
+              entity_id: !input climatizador
+            data:
+              hvac_mode: '{{ states(modo_anterior) }}'
+          - choose:
+            - conditions: '{{ accion_cerrar is defined and accion_cerrar|length > 0 }}'
+              sequence: !input accion_cerrar
