@@ -1,36 +1,35 @@
 blueprint:
-  name: MIO - Climate - Windows Control
+  name: MIO - Climatización - Control Ventanas
   description: 
-    "Turns off (if on) and returns to its previous state
-    an climate device (thermostat, air conditioning...), depending on how they are opened
-    or close a group of windows and/or doors. A delay can be programmed in the
-    on/off, and an action after each change.\n\n
+    "Apaga (en caso de estar encendido) y vuelve a su estado anterior
+    una entidad de climatización (termostato, aire acondicionado...), según se abran 
+    o cierren un grupo de ventanas y/o puertas. Se puede programar un retraso en el 
+    encendido/apagado, y una accion después de cada cambio.\n\n
 
-    ### Actions:\n\n
+    ### Acciones:\n\n
 
-    > Optionally, one or more actions can be configured to be executed when windows are opened or closed.\n
-    > For notification type actions (which will be the most common), the following variables are made available to compose the body of the message:\n\n
-    > \ - ***{{ modo_anterior }}***: Previous mode (see below)\n\n
+    > Opcionalmente, puede configurarse una o varias acciones que se ejecutarán al abrir o cerrar las ventanas.\n
+    > Para acciones tipo notificación (que serán las más habituales), se ponen a disposición las siguientes variables para componer el cuerpo del mensaje:\n\n
+    > \ - ***{{ modo_anterior }}***: Modo anterior (ver a continuación)\n\n
 
-    ### Previous mode:\n\n
+    ### Modo Anterior:\n\n
 
-    You need to create an entity [***'input_select'***](https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
-    with the possible states (***'hvac_mode'*** values) in which your air conditioner can be, to save the previous state,
-    and be able to restore it when the windows are closed.\n\n
+    Es necesario crear una entidad [***'input_select'***](https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
+    con los posibles estados (valores de ***'hvac_mode'***) en los que puede estar tu climatizador, para guardar el estado anterior,
+    y poder restaurarlo cuando se cierren las ventanas.\n\n
 
     **Version**: 2.1.0\n
     
-    **Documentation:** We are working on it, but there is little more that can be said that has not already been said..."
+    **Documentación:** Estamos trabajando en ello, pero poco más se puede decir que no se haya dicho ya..."
   
   domain: automation
-  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_windows_control.yaml
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/castellano/climate_control_ventanas.yaml
 
   input:
 
     climatizador:
-      name: Climate Entity
-      description: "`required`\n\n
-        The climate entity that will be in contact with the windows and/or doors."
+      name: Entidad de Climatización
+      description: El climatizador que se contrará con las ventanas y/o puertas.
       selector:
         entity:
           multiple: false
@@ -38,10 +37,9 @@ blueprint:
           - domain: climate
 
     ventanas:
-      name: Windows/Doors
-      description: "`required`\n\n
-        The window or door that controls the climate entity. If there are several, it is
-        necessary to create a group."
+      name: Ventanas o Puertas
+      description: La ventana o puerta que controla el climatizador. Si hay varios, es
+        necesario crear un grupo.
       selector:
         entity:
           multiple: false
@@ -53,9 +51,8 @@ blueprint:
 #          - domain: group
 
     retraso_abrir:
-      name: Delay Opening
-      description: "`optional`\n\n
-        Waiting time in seconds, from when the window opened until the climate entity is turned off."
+      name: Retraso al Abrir
+      description: Tiempo de espera en segundos, desde que se abre la ventana, hasta que se apaga el climatizador
       default: 30
       selector:
         number:
@@ -66,17 +63,15 @@ blueprint:
           step: 1.0
 
     accion_abrir:
-      name: Opening Actions
-      description: "`optional`\n\n
-        Actions to be executed when windows and/or doors are opened (e.g. sending a notification)."
+      name: Acción al Abrir (Opcional)
+      description: Acción a ejecutar cuando se abren las ventanas y/o puertas (p.e. enviar una notificación)
       default: []
       selector:
         action: {}
 
     retraso_cerrar:
-      name: Delay Closing
-      description: "`optional`\n\n
-        Waiting time in seconds, from when the window closed until the climate entity is turned off."
+      name: Retraso al Cerrar
+      description: Tiempo de espera en segundos, desde que se cierra la ventana, hasta que se enciende el climatizador
       default: 10
       selector:
         number:
@@ -87,18 +82,16 @@ blueprint:
           step: 1.0
 
     accion_cerrar:
-      name: Closing Actions
-      description: "`optional`\n\n
-        Actions to be executed when windows and/or doors are closed (e.g. sending a notification)."
+      name: Acción al Cerrar (Opcional)
+      description: Acción a ejecutar cuando se cierran las ventanas y/o puertas (p.e. enviar una notificación)
       default: []
       selector:
         action: {}
 
     modo_anterior:
-      name: Previous Mode
-      description: "`required`\n\n
-        Input Select to store the mode in which the climate entity was before turning it off.
-        It is saved whenever the window is opened, even when the air conditioning is off."
+      name: Modo Anterior
+      description: Selector para almacenar el modo en el que se encontraba el climatizador antes de apagarlo.
+        Se guarda siempre que se abre la ventana, incluso estando el climatizador apagado
       selector:
         entity:
           multiple: false
