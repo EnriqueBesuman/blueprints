@@ -210,8 +210,8 @@ action:
             target:
               entity_id: !input climatizador
           - choose:
-              - condition: "{{ accion_'trigger.id' is defined and accion_'trigger.id'|length > 0 }}"
-                sequence: !input 'accion_{{trigger.id}}'
+              - condition: "{{ accion_'{{trigger.id}}' is defined and accion_'{{trigger.id}}'|length > 0 }}"
+                sequence: !input accion_'{{trigger.id}}'
 
   - if:
       - condition: trigger
@@ -237,7 +237,7 @@ action:
             data:
               options: 'off'
           - choose:
-              - condition: "{{ accion_'trigger.id' is defined and accion_'trigger.id'|length > 0 }}"
-                sequence: !input 'accion_{{trigger.id}}'
+              - condition: "{{ accion_'{{trigger.id}}' is defined and accion_'{{trigger.id}}'|length > 0 }}"
+                sequence: !input accion_'{{trigger.id}}'
   
-mode: single
+mode: restart
