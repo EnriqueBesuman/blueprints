@@ -216,7 +216,8 @@ action:
                   id: 
                     - abrir
                 - condition: template
-                  value_template: {{ accion_abrir is defined and accion_abrir|length > 0 }}
+                  value_template: >
+                    {{ accion_abrir is defined and accion_abrir|length > 0 }}
             then:
                 - sequence: !input accion_abrir
           - if:
@@ -226,7 +227,8 @@ action:
                   id: 
                     - salir
                 - condition: template
-                  value_template: {{ accion_salir is defined and accion_salir|length > 0 }}
+                  value_template: >
+                    {{ accion_salir is defined and accion_salir|length > 0 }}
             then:
               - sequence: !input accion_salir
 
@@ -260,7 +262,8 @@ action:
                   id: 
                     - cerrar
                 - condition: template
-                  value_template: {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+                  value_template: >
+                    {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
             then:
                 - sequence: !input accion_cerrar
           - if:
@@ -270,7 +273,8 @@ action:
                   id: 
                     - entrar
                 - condition: template
-                  value_template: {{ accion_entrar is defined and accion_entrar|length > 0 }}
+                  value_template: >
+                    {{ accion_entrar is defined and accion_entrar|length > 0 }}
             then:
               - sequence: !input accion_entrar
   
