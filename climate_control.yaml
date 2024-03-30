@@ -40,6 +40,7 @@ blueprint:
       name: Windows/Doors
       description: "`optional`\n\n
         The windows or doors that controls the climate entity."
+      default: []
       selector:
         entity:
           multiple: true
@@ -96,6 +97,7 @@ blueprint:
       name: People 
       description: "`optional`\n\n
         People that we want to control if they are in the room or not."
+      default: []
       selector:
         entity:
           multiple: true
