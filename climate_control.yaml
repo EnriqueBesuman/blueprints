@@ -223,7 +223,7 @@ action:
                   value_template: >
                     {{ accion_abrir is defined and accion_abrir|length > 0 }}
             then:
-                - sequence: !input accion_abrir
+              - sequence: !input accion_abrir
           - if:
               - condition: and
                 conditions:
@@ -269,7 +269,7 @@ action:
                   value_template: >
                     {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
             then:
-                - sequence: !input accion_cerrar
+              - sequence: !input accion_cerrar
           - if:
               - condition: and
                 conditions:
