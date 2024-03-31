@@ -193,93 +193,83 @@ trigger:
 action:
 
   - if:
-      - condition: trigger
-        id:
-          - abrir
-          - salir
+      - and:
+          - condition: trigger
+            id:
+              - abrir
+              - salir
+          - not:
+              - condition: state
+                entity_id: !input climatizador
+                state: 'off'
     then:
-      - if: 
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: !input climatizador
-              state: 'off'
-        then:
-          - service: input_select.set_options
-            target:
-              entity_id: !input modo_anterior
-            data:
-              options: '{{ states(climatizador) }}'
-          - service: climate.turn_off
-            target:
-              entity_id: !input climatizador
-          - if:
-              - condition: and
-                conditions:
+      - service: input_select.set_options
+        target:
+          entity_id: !input modo_anterior
+        data:
+          options: '{{ states(climatizador) }}'
+      - service: climate.turn_off
+        target:
+          entity_id: !input climatizador
+      - choose:
+          - conditions:
+            - and:
                 - condition: trigger
                   id: 
                     - abrir
                 - condition: template
                   value_template: >
                     {{ accion_abrir is defined and accion_abrir|length > 0 }}
-            then:
-              - sequence: !input accion_abrir
-          - if:
-              - condition: and
-                conditions:
+            sequence: !input accion_abrir
+          - conditions:
+            - and:
                 - condition: trigger
                   id: 
                     - salir
                 - condition: template
                   value_template: >
                     {{ accion_salir is defined and accion_salir|length > 0 }}
-            then:
-              - sequence: !input accion_salir
+            sequence: !input accion_salir
 
   - if:
-      - condition: trigger
-        id:
-          - cerrar
-          - entrar
+      - and:
+          - condition: trigger
+            id:
+              - cerrar
+              - entrar
+          - not:
+              - condition: state
+                entity_id: !input modo_anterior
+                state: 'off'
     then:
-      - if: 
-          - condition: not
-            conditions:
-            - condition: state
-              entity_id: !input modo_anterior
-              state: 'off'
-        then:
-          - service: climate.set_hvac_mode
-            target:
-              entity_id: !input climatizador
-            data:
-              hvac_mode: '{{ states(modo_anterior) }}'
-          - service: input_select.set_options
-            target:
-              entity_id: !input modo_anterior
-            data:
-              options: 'off'
-          - if:
-              - condition: and
-                conditions:
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: !input climatizador
+        data:
+          hvac_mode: '{{ states(modo_anterior) }}'
+      - service: input_select.set_options
+        target:
+          entity_id: !input modo_anterior
+        data:
+          options: 'off'
+      - choose:
+          - conditions:
+            - and:
                 - condition: trigger
                   id: 
                     - cerrar
                 - condition: template
                   value_template: >
                     {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-            then:
-              - sequence: !input accion_cerrar
-          - if:
-              - condition: and
-                conditions:
+            sequence: !input accion_cerrar
+          - conditions:
+            - and:
                 - condition: trigger
                   id: 
                     - entrar
                 - condition: template
                   value_template: >
                     {{ accion_entrar is defined and accion_entrar|length > 0 }}
-            then:
-              - sequence: !input accion_entrar
-  
+            sequence: !input accion_entrar
+
 mode: restart
