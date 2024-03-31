@@ -165,6 +165,8 @@ variables:
   accion_entrar: !input accion_entrar
   climatizador: !input climatizador
   modo_anterior: !input modo_anterior
+
+trigger_variables:
   ventanas: !input ventanas
   personas: !input personas
 
