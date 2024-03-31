@@ -10,7 +10,7 @@ blueprint:
   input:
     dispositivo:
       name: Doors and Windows
-      description: "`required`\n\n Doors and Windows to control"
+      description: "`required`\n\n Door or Window to control"
       selector:
         entity:
           multiple: false
