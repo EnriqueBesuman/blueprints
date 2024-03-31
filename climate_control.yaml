@@ -9,7 +9,10 @@ blueprint:
 
     > Optionally, one or more actions can be configured to be executed when windows are opened or closed.\n
     > For notification type actions (which will be the most common), the following variables are made available to compose the body of the message:\n\n
-    > \ - ***{{ modo_anterior }}***: Previous mode (see below)\n\n
+    > \ - ***{{ list_open }}***: List of open windows or/and doors.\n\n
+    > \ - ***{{ list_open }}***: List of close windows or/and doors.\n\n
+    > \ - ***{{ list_home }}***: List of people in the room.\n\n
+    > \ - ***{{ list_away }}***: List of people outside the room.\n\n
 
     ### Previous mode:\n\n
 
