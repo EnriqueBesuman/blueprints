@@ -259,7 +259,7 @@ action:
               {{ expand(ventanas) | selectattr('state', '==', 'on') | list | count == 0 }}
           - condition: template
             value_template: >
-              {{ expand(personas) | selectattr('state', '==', 'home') | list | count > 0 }}
+              {{ expand(personas) | selectattr('state', '!=', 'home') | list | count == 0 }}
 
           - not:
               - condition: state
