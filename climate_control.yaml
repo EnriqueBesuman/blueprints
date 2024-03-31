@@ -167,13 +167,13 @@ variables:
   modo_anterior: !input modo_anterior
 
   list_open: >
-    {{ expand(ventanas) | selectattr('state', '==', 'on') | map(attribute='name') | list | join(', ') }}
+    {{ expand(ventanas) | selectattr('state', '==', 'on') | map(attribute='name') | list }}
   list_close: >
-    {{ expand(ventanas) | selectattr('state', '==', 'off') | map(attribute='name') | list | join(', ') }}
+    {{ expand(ventanas) | selectattr('state', '==', 'off') | map(attribute='name') | list }}
   list_home: >
-    {{ expand(personas) | selectattr('state', '==', 'home') | map(attribute='name') | list | join(', ') }}
+    {{ expand(personas) | selectattr('state', '==', 'home') | map(attribute='name') | list }}
   list_away: >
-    {{ expand(personas) | selectattr('state', '!=', 'home') | map(attribute='name') | list | join(', ') }}
+    {{ expand(personas) | selectattr('state', '!=', 'home') | map(attribute='name') | list }}
 
 trigger_variables:
   ventanas: !input ventanas
