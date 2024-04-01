@@ -1,5 +1,5 @@
 blueprint:
-  name: MIO - Control of closing or opening doors or/and windows
+  name: MIO - Doors and Windows Control
   description: "# Control of closing or opening doors and windows.\n\nFacilitates
     the execution of actions in the following cases:\n - When the doors or windows is opened
     (it is possible to delay the action **x seconds**).\n - While the doors

@@ -1,6 +1,6 @@
 blueprint:
-  name: MIO - Light control 
-  description: "Turns light on and off based on the following cases:\n\n
+  name: MIO - Lights Control 
+  description: "Turns lights on and off based on the following scenes:\n\n
     > - When a **Binary Sensor** is activated. In this case, the operation is as follows:\n
     >> - The lights will turn on when ***ANY*** of the sensors are activated.\n
     >> - The lights will turn off when ***ALL*** sensors are deactivated.\n

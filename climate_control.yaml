@@ -1,7 +1,7 @@
 blueprint:
   name: MIO - Climate Control
   description: "Turns off (if on) and returns to its previous state
-    an climate device (thermostat, air conditioning...) based on the following cases:\n\n
+    an climate device (thermostat, air conditioning...) based on the following scenes:\n\n
     > - They are opened or close a group of windows and/or doors. A delay can be programmed in the
     on/off, and an action after each change.\n\n
 
