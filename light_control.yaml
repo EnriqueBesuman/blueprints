@@ -154,7 +154,6 @@ blueprint:
 
 variables:
 
-
   activador: !input activador
   luces: !input luces
   modo_sensor: !input modo_sensor
@@ -182,16 +181,6 @@ trigger:
     {{ expand(activador) | selectattr('state', '==', 'on') | list | count == 0 }}
   for: !input espera_sensor
   id: activador_off
-
-#- platform: state
-#  entity_id: !input activador
-#  to: 'on'
-#  id: activador_on
-#- platform: state
-#  entity_id: !input activador
-#  to: 'off'
-#  for: !input espera_sensor
-#  id: activador_off
 
 - platform: sun
   event: sunrise
