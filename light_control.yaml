@@ -17,6 +17,7 @@ blueprint:
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/light_control.yaml
 
   input:
+  
     luces:
       name: Light
       description: "`required`\n\n

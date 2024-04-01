@@ -4,10 +4,16 @@ blueprint:
     the execution of actions in the following cases:\n - When the doors or windows is opened
     (it is possible to delay the action **x seconds**).\n - While the doors
     or windows remains open (in **x minute** intervals).\n - When the doors
-    or windows closes (it is possible to delay the action **x seconds**).\n"
-  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/door_and_window_control.yaml
+    or windows closes (it is possible to delay the action **x seconds**).\n\n\n
+
+    **Version**: 1.0.0\n\n
+    **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
+
   domain: automation
+  source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/door_and_window_control.yaml
+
   input:
+
     dispositivo:
       name: Doors and Windows
       description: "`required`\n\n Door or Window to control"
@@ -27,6 +33,7 @@ blueprint:
             - binary_sensor
             device_class:
             - garage_door
+
     retraso_abrir:
       name: Delay opening
       description: "`optional`\n\n Waiting time **in seconds**, from opening
@@ -39,6 +46,7 @@ blueprint:
           unit_of_measurement: seconds
           mode: box
           step: 1.0
+
     accion_abrir:
       name: Opening actions
       description: "`optional`\n\n Actions to be executed when the doors or/and windows is opened.\n\n
@@ -50,12 +58,14 @@ blueprint:
       default: []
       selector:
         action: {}
+
     aviso_repetitivo:
       name: Execute recursive action while the door or window is open
       description: "`required`\n\n Execute action every x time while the door or window remains open."
       default: false
       selector:
         boolean: {}
+
     intervalo_repeticion:
       name: Interval between actions
       description: "`optional`\n\n Interval **in minutes** between actions, when the door or window remains open."
@@ -67,6 +77,7 @@ blueprint:
           unit_of_measurement: minutes
           mode: box
           step: 1.0
+
     accion_repeticion:
       name: Actions in each repetition
       description: "`optional`\n\n Actions to be executed while the door or window
@@ -82,6 +93,7 @@ blueprint:
       default: []
       selector:
         action: {}
+
     retraso_cerrar:
       name: Delay closing
       description: "`opcional`\n\n Waiting time **in seconds**, from closing
@@ -94,6 +106,7 @@ blueprint:
           unit_of_measurement: seconds
           mode: box
           step: 1.0
+
     accion_cerrar:
       name: Closing actions
       description: "`opcional`\n\n Actions to be executed when the doors or/and windows is closed.\n\n
@@ -105,7 +118,10 @@ blueprint:
       default: []
       selector:
         action: {}
+
+
 variables:
+
   accion_abrir: !input accion_abrir
   accion_cerrar: !input accion_cerrar
   accion_repeticion: !input accion_repeticion
@@ -113,7 +129,10 @@ variables:
   retraso_abrir: !input retraso_abrir
   retraso_cerrar: !input retraso_cerrar
   intervalo_repeticion: !input intervalo_repeticion
+
+
 trigger:
+
 - id: abierta
   platform: state
   entity_id: !input dispositivo
@@ -126,8 +145,13 @@ trigger:
   from: 'on'
   to: 'off'
   for: !input retraso_cerrar
+
+
 condition: []
+
+
 action:
+
 - choose:
   - alias: Puerta o ventana abierta
     conditions:
@@ -138,18 +162,15 @@ action:
       - alias: Ver si aviso puerta abierta
         conditions:
           condition: template
-          value_template: '{{ accion_abrir is defined and accion_abrir|length > 0
-            }}
-
-            '
+          value_template: >
+            {{ accion_abrir is defined and accion_abrir|length > 0 }}
         sequence: !input accion_abrir
     - choose:
       - alias: Si aviso repetitido
         conditions:
           condition: template
-          value_template: '{{ aviso_repetitivo }}
-
-            '
+          value_template: >
+            {{ aviso_repetitivo }}
         sequence:
         - alias: Esperamos a que se cierre la puerta o ventana a intervalos de x minutos
           repeat:
@@ -161,8 +182,8 @@ action:
               timeout:
                 minutes: !input intervalo_repeticion
             - variables:
-                tiempo_abierta: "{{ (intervalo_repeticion |int(0) * repeat.index |int(0))
-                  }}  \n"
+                tiempo_abierta: >
+                  {{ (intervalo_repeticion |int(0) * repeat.index |int(0)) }}
             - if:
               - alias: Si pasa el intervalo y aún no se ha cerrado la puerta o ventana
                 condition: state
@@ -172,10 +193,8 @@ action:
               - choose:
                   conditions:
                     condition: template
-                    value_template: '{{ accion_repeticion is defined and accion_repeticion|length
-                      > 0 }}
-
-                      '
+                    value_template: >
+                      {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
                   sequence: !input accion_repeticion
             until:
             - condition: state
@@ -191,9 +210,8 @@ action:
     - choose:
         conditions:
           condition: template
-          value_template: '{{ accion_cerrar is defined and accion_cerrar|length >
-            0 }}
-
-            '
+          value_template: >
+            {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
         sequence: !input accion_cerrar
+        
 mode: single
