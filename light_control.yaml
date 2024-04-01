@@ -1,7 +1,10 @@
 blueprint:
   name: MIO - Light control 
   description: "Turns light on and off based on the following cases:\n\n
-    > - When a **Binary Sensor** is activated (and based on an optional time offset).\n
+    > - When a **Binary Sensor** is activated. In this case, the operation is as follows:
+    >> - The lights will turn on when ***any*** of the sensors are activated.
+    >> - The lights will turn off when ***all*** sensors are deactivated.
+    >> Optionally, a delay time can be indicated for turning off the lights.\n
     > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
     operating mode **Day or Night**).\n
     > - And/or When an NFC tag is read.\n
