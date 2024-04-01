@@ -153,7 +153,6 @@ variables:
 
 
   activador: !input activador
-  tag_id: !input tag_id
   luces: !input luces
   modo_sensor: !input modo_sensor
   modo_natural: !input modo_natural
@@ -164,18 +163,32 @@ variables:
   modo: !input modo
 
 
+trigger_variables:
+
+  activador: !input activador
+
+
 trigger:
 
-
-- platform: state
-  entity_id: !input activador
-  to: 'on'
+- platform: template
+  value_template: >
+    {{ expand(activador) | selectattr('state', '==', 'on') | list | count > 0 }}
   id: activador_on
-- platform: state
-  entity_id: !input activador
-  to: 'off'
+- platform: template
+  value_template: >
+    {{ expand(activador) | selectattr('state', '==', 'on') | list | count == 0 }}
   for: !input espera_sensor
   id: activador_off
+
+#- platform: state
+#  entity_id: !input activador
+#  to: 'on'
+#  id: activador_on
+#- platform: state
+#  entity_id: !input activador
+#  to: 'off'
+#  for: !input espera_sensor
+#  id: activador_off
 
 - platform: sun
   event: sunrise
@@ -219,7 +232,8 @@ action:
                   {{ ( not solo_noche_sensor) or 
                   (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
             then:
-              - service: light.turn_{{ states(activador) }}
+#              - service: light.turn_{{ states(activador) }}
+              - service: light.turn_{{ iif( trigger.id == 'activador_on','on','off' ) }}
                 data:
                   entity_id: '{{ luces }}'
 
