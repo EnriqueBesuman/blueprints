@@ -147,6 +147,7 @@ variables:
   retraso_abrir: !input retraso_abrir
   retraso_cerrar: !input retraso_cerrar
   intervalo_repeticion: !input intervalo_repeticion
+  presencia: !input presencia
 
 
 trigger:
@@ -186,6 +187,9 @@ action:
     - choose:
       - alias: Si aviso repetitido
         conditions:
+          - condition: template
+            value_template: >
+              {{ not not presencia }}
           - condition: state
             entity_id: !input presencia
             state: "off"
