@@ -10,7 +10,8 @@ blueprint:
     > - And/or When an NFC tag is read.\n
     > - According to a certain level of **luminosity** (applies in any of the previous cases).\n\n\n
 
-    **Version**: 1.0.5\n\n
+    **Version**: \n
+    > - 1.0.5: Waiting time on as select time\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
