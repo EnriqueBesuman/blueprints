@@ -124,6 +124,7 @@ blueprint:
     presencia:
       name: Presence sensor
       description: "`optional`\n\n As long as the sensor detects presence, intermediate actions will not be executed"
+      default: []
       selector:
         entity:
           multiple: false
