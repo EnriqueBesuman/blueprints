@@ -6,7 +6,9 @@ blueprint:
     or windows remains open (in **x minute** intervals).\n - When the doors
     or windows closes (it is possible to delay the action **x seconds**).\n\n\n
 
-    **Version**: 1.0.0\n\n
+    **Version**: \n
+    > - 1.0.0\n
+    > - 1.1.0: Add presence sensor\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -15,7 +17,7 @@ blueprint:
   input:
 
     dispositivo:
-      name: Doors and Windows
+      name: Doors or Windows
       description: "`required`\n\n Door or Window to control"
       selector:
         entity:
@@ -119,6 +121,21 @@ blueprint:
       selector:
         action: {}
 
+    presencia:
+      name: Presence sensor
+      description: "`optional`\n\n As long as the sensor detects presence, intermediate actions will not be executed"
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain:
+            - binary_sensor
+            device_class:
+            - presence
+          - domain:
+            - binary_sensor
+            device_class:
+            - motion
 
 variables:
 
@@ -168,9 +185,12 @@ action:
     - choose:
       - alias: Si aviso repetitido
         conditions:
-          condition: template
-          value_template: >
-            {{ aviso_repetitivo }}
+          - condition: state
+            entity_id: !input presencia
+            state: "off"
+          - condition: template
+            value_template: >
+              {{ aviso_repetitivo }}
         sequence:
         - alias: Esperamos a que se cierre la puerta o ventana a intervalos de x minutos
           repeat:
