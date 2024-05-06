@@ -187,15 +187,17 @@ action:
     - choose:
       - alias: Si aviso repetitido
         conditions:
-          - condition: template
-            value_template: >
-              {{ not not presencia }}
-          - condition: state
-            entity_id: !input presencia
-            state: "off"
-          - condition: template
-            value_template: >
-              {{ aviso_repetitivo }}
+          - and:
+            - or:
+              - condition: template
+                value_template: >
+                  {{ not not presencia }}
+              - condition: state
+                entity_id: !input presencia
+                state: "off"
+            - condition: template
+              value_template: >
+                {{ aviso_repetitivo }}
         sequence:
         - alias: Esperamos a que se cierre la puerta o ventana a intervalos de x minutos
           repeat:
