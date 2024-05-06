@@ -216,7 +216,7 @@ action:
                     - or:
                       - condition: template
                         value_template: >
-                          {{ not not presencia }}
+                          {{ not presencia }}
                       - condition: state
                         entity_id: !input presencia
                         state: "off"
