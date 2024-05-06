@@ -123,7 +123,8 @@ blueprint:
 
     presencia:
       name: Presence sensor
-      description: "`optional`\n\n As long as the sensor detects presence, intermediate actions will not be executed"
+      description: "`optional`\n\n As long as the sensor detects presence, intermediate actions will not be executed.\n
+        When the sensor stops detecting presence, the actions will resume (as long as the door or window remains open, of course...)"
       default: []
       selector:
         entity:
