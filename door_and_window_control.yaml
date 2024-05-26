@@ -8,7 +8,10 @@ blueprint:
 
     **Version**: \n
     > - 1.0.0\n
-    > - 1.1.0: Add presence sensor\n\n
+    > - 1.1.0: Add presence sensor\n
+    > - 1.1.1: Closing control is improved\n
+    > - 1.2.0: Added option to execute the closing action, only when repetition has occurred\n\n
+
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -121,6 +124,13 @@ blueprint:
       selector:
         action: {}
 
+    accion_cerrar_solo_rep:
+      name: Run the close action only if a recursive action occurred
+      description: "`required`\n\n Run the close action only if a recursive action occurred. Possibly this option avoids unnecessary or annoying actions..."
+      default: false
+      selector:
+        boolean: {}
+
     presencia:
       name: Presence sensor
       description: "`optional`\n\n As long as the sensor detects presence, intermediate actions will not be executed.\n
@@ -149,6 +159,7 @@ variables:
   retraso_cerrar: !input retraso_cerrar
   intervalo_repeticion: !input intervalo_repeticion
   presencia: !input presencia
+  accion_cerrar_solo_rep: !input accion_cerrar_solo_rep
 
 
 trigger:
@@ -172,6 +183,8 @@ condition: []
 
 action:
 
+- variables: 
+  hay_rep: false
 - choose:
   - alias: Puerta o ventana abierta
     conditions:
@@ -223,7 +236,10 @@ action:
                     - condition: template
                       value_template: >
                         {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
-                  sequence: !input accion_repeticion
+                  sequence: 
+                    - !input accion_repeticion
+                    - variables:
+                      hay_rep: true
             until:
             - condition: state
               entity_id: !input dispositivo
@@ -231,15 +247,22 @@ action:
 - choose:
   - alias: Puerta o ventana cerrada
     conditions:
-      condition: state
-      entity_id: !input dispositivo
-      state: 'off'
+      condition: trigger
+      id: cerrada
     sequence:
     - choose:
         conditions:
-          condition: template
-          value_template: >
-            {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+          - and:
+              - condition: template
+                value_template: >
+                  {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+              - or: 
+                - condition: template
+                  value_template: >
+                    {{ (not accion_cerrar_solo_rep) }}
+                - condition: template
+                  value_template: >
+                    {{ (hay_rep and accion_cerrar_solo_rep) }}
         sequence: !input accion_cerrar
         
 mode: single
