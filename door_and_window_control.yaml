@@ -236,7 +236,7 @@ action:
                       value_template: >
                         {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
                   sequence: 
-                    - !input accion_repeticion
+                    !input accion_repeticion
                     - variables:
                       hay_rep: true
             until:
