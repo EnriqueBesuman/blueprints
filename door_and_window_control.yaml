@@ -160,6 +160,7 @@ variables:
   intervalo_repeticion: !input intervalo_repeticion
   presencia: !input presencia
   accion_cerrar_solo_rep: !input accion_cerrar_solo_rep
+  tiempo_abierta: 0
 
 
 trigger:
