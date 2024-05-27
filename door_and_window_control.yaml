@@ -257,7 +257,7 @@ action:
                     {{ ( not accion_cerrar_solo_rep) }}
                 - condition: template
                   value_template: >
-                    {{ ((tiempo_abierta > 0) and accion_cerrar_solo_rep) }}
+                    {{ ((tiempo_abierta | int > 0) and accion_cerrar_solo_rep) }}
         sequence: !input accion_cerrar
         
 mode: single
