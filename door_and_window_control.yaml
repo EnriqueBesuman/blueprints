@@ -160,6 +160,7 @@ variables:
   intervalo_repeticion: !input intervalo_repeticion
   presencia: !input presencia
   accion_cerrar_solo_rep: !input accion_cerrar_solo_rep
+  hay_rep: false
 
 
 trigger:
@@ -183,8 +184,6 @@ condition: []
 
 action:
 
-- variables: 
-  hay_rep: false
 - choose:
   - alias: Puerta o ventana abierta
     conditions:
@@ -259,7 +258,7 @@ action:
               - or: 
                 - condition: template
                   value_template: >
-                    {{ (not accion_cerrar_solo_rep) }}
+                    {{ ( not accion_cerrar_solo_rep) }}
                 - condition: template
                   value_template: >
                     {{ (hay_rep and accion_cerrar_solo_rep) }}
