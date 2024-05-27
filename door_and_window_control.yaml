@@ -160,7 +160,6 @@ variables:
   intervalo_repeticion: !input intervalo_repeticion
   presencia: !input presencia
   accion_cerrar_solo_rep: !input accion_cerrar_solo_rep
-  hay_rep: false
 
 
 trigger:
@@ -235,10 +234,7 @@ action:
                     - condition: template
                       value_template: >
                         {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
-                  sequence: 
-                    !input accion_repeticion
-                    - variables:
-                        hay_rep: true
+                  sequence: !input accion_repeticion
             until:
             - condition: state
               entity_id: !input dispositivo
@@ -261,7 +257,7 @@ action:
                     {{ ( not accion_cerrar_solo_rep) }}
                 - condition: template
                   value_template: >
-                    {{ (hay_rep and accion_cerrar_solo_rep) }}
+                    {{ ((tiempo_abierta > 0) and accion_cerrar_solo_rep) }}
         sequence: !input accion_cerrar
         
 mode: single
