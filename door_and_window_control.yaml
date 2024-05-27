@@ -265,10 +265,7 @@ action:
         - and:
           - condition: template
             value_template: >
-              {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-          - condition: template
-            value_template: >
-              {{ ( not accion_cerrar_solo_rep) }}
+              {{ accion_cerrar is defined and accion_cerrar|length > 0 and not accion_cerrar_solo_rep}}
         sequence: !input accion_cerrar
         
 mode: single
