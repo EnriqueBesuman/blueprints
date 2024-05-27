@@ -222,7 +222,7 @@ action:
                 entity_id: !input dispositivo
                 state: 'on'
               then:
-              - choose:
+                choose:
                   conditions:
                   - and:
                     - or:
@@ -236,6 +236,18 @@ action:
                       value_template: >
                         {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
                   sequence: !input accion_repeticion
+              else:
+                - alias: se ha cerrado la puerta o ventana, ha habido repetición y está marcada la opción de acción cerrar solo si repetición
+                  choose:
+                    conditions:
+                    - and:
+                      - condition: template
+                        value_template: >
+                          {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+                      - condition: template
+                        value_template: >
+                          {{ (accion_cerrar_solo_rep) }}
+                    sequence: !input accion_cerrar
             until:
             - condition: state
               entity_id: !input dispositivo
@@ -252,13 +264,9 @@ action:
               - condition: template
                 value_template: >
                   {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-              - or: 
-                - condition: template
-                  value_template: >
-                    {{ ( not accion_cerrar_solo_rep) }}
-                - condition: template
-                  value_template: >
-                    {{ ((tiempo_abierta | int > 0) and accion_cerrar_solo_rep) }}
+              - condition: template
+                value_template: >
+                  {{ ( not accion_cerrar_solo_rep) }}
         sequence: !input accion_cerrar
         
 mode: single
