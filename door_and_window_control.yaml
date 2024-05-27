@@ -56,10 +56,10 @@ blueprint:
       name: Opening actions
       description: "`optional`\n\n Actions to be executed when the doors or/and windows is opened.\n\n
         For notification-type actions, the following variables are availables to compose the body of the message:\n\n 
-        - ***{{ open_delay }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ close_delay }}***: Timeout
+        - ***{{ retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
+        until the action is executed.\n - ***{{ retraso_cerrar }}***: Timeout
         **in seconds**, from the moment the door or window is closed, until the action is executed.\n 
-        - ***{{ repetition_interval }}***: Interval **in minutes** between actions when the door or window remains open.\n"
+        - ***{{ intervalo_repeticion }}***: Interval **in minutes** between actions when the door or window remains open.\n"
       default: []
       selector:
         action: {}
@@ -88,11 +88,11 @@ blueprint:
       description: "`optional`\n\n Actions to be executed while the door or window
         remains open.\n\nFor notification-type actions, they are availables
         the following variables to compose the body of the message:\n\n - ***{{
-        open_delay }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ close_delay }}***: Time
+        retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
+        until the action is executed.\n - ***{{ retraso_cerrar }}***: Time
         waiting time **in seconds**, from when the door or window is closed, until
-        executes the action.\n - ***{{ repetition_interval }}***: Interval **in minutes**
-        between actions, when the door or window remains open.\n - ***{{ open_time
+        executes the action.\n - ***{{ intervalo_repeticion }}***: Interval **in minutes**
+        between actions, when the door or window remains open.\n - ***{{ (tiempo_abierta
         }}***: Total time **in minutes** since the door was opened or
         window (not counting the delay in seconds when opening...)."
       default: []
@@ -116,10 +116,10 @@ blueprint:
       name: Closing actions
       description: "`opcional`\n\n Actions to be executed when the doors or/and windows is closed.\n\n
         For notification-type actions, the following variables are availables to compose the body of the message:\n\n 
-        - ***{{ open_delay }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ close_delay }}***: Timeout
+        - ***{{ retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
+        until the action is executed.\n - ***{{ retraso_cerrar }}***: Timeout
         **in seconds**, from the moment the door or window is closed, until the action is executed.\n 
-        - ***{{ repetition_interval }}***: Interval **in minutes** between actions when the door or window remains open.\n"
+        - ***{{ intervalo_repeticion }}***: Interval **in minutes** between actions when the door or window remains open.\n"
       default: []
       selector:
         action: {}
