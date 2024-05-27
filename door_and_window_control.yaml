@@ -259,14 +259,15 @@ action:
       id: cerrada
     sequence:
     - choose:
+      - alias: Ejecutar acción cerrar, solo si no se marca la opción de acción cerrar solo si repetición
         conditions:
-          - and:
-              - condition: template
-                value_template: >
-                  {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-              - condition: template
-                value_template: >
-                  {{ ( not accion_cerrar_solo_rep) }}
+        - and:
+          - condition: template
+            value_template: >
+              {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+          - condition: template
+            value_template: >
+              {{ ( not accion_cerrar_solo_rep) }}
         sequence: !input accion_cerrar
         
 mode: single
