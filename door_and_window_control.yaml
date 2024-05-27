@@ -238,7 +238,7 @@ action:
                   sequence: 
                     !input accion_repeticion
                     - variables:
-                      hay_rep: true
+                        hay_rep: true
             until:
             - condition: state
               entity_id: !input dispositivo
