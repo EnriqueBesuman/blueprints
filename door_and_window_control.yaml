@@ -252,11 +252,12 @@ action:
             - condition: state
               entity_id: !input dispositivo
               state: 'off'
-              
+- choose:
   - alias: Puerta o ventana cerrada
     conditions:
-      condition: trigger
-      id: cerrada
+      condition: state
+      entity_id: !input dispositivo
+      state: 'off'
     sequence:
     - choose:
       - alias: Ejecutar acción cerrar, solo si no se marca la opción de acción cerrar solo si repetición
