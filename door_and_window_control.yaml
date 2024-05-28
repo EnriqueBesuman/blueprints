@@ -253,26 +253,24 @@ action:
               then:
                 choose:
                   conditions:
-                  - and:
-                    - or:
-                      - condition: template
-                        value_template: >
-                          {{ not presencia }}
-                      - condition: state
-                        entity_id: !input presencia
-                        state: "off"
+                  - or:
+                    - condition: template
+                      value_template: >
+                        {{ not presencia }}
+                    - condition: state
+                      entity_id: !input presencia
+                      state: "off"
                   sequence: !input accion_repeticion
               else:
               - alias: Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
                 choose:
                   conditions:
-                  - and:
-                    - condition: template
-                      value_template: >
-                        {{ (accion_cerrar_solo_rep) }}
-                    - condition: template
-                      value_template: >
-                        {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+                  - condition: template
+                    value_template: >
+                      {{ accion_cerrar_solo_rep }}
+                  - condition: template
+                    value_template: >
+                      {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
                   sequence: !input accion_cerrar
             until:
             - condition: state
