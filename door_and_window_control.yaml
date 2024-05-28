@@ -253,7 +253,7 @@ action:
               then:
                 choose:
                   - conditions:
-                      or:
+                      - or:
                         - condition: template
                           value_template: >
                             {{ not presencia }}
