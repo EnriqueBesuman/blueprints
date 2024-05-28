@@ -239,8 +239,8 @@ action:
               - platform: state
                 entity_id: !input dispositivo
                 to: 'off'
-              timeout:
-                minutes: !input intervalo_repeticion
+                timeout:
+                  minutes: !input intervalo_repeticion
             - alias: Informamos variable tiempo_abierta
               variables:
                 tiempo_abierta: >
