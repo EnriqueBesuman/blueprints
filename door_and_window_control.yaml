@@ -202,34 +202,34 @@ action:
 - choose:
   - alias: Trigger tanto con abierta como cerrada
     conditions:
-      condition: trigger
-      id: 
-      - abierta
-      - cerrada
+      - condition: trigger
+        id: 
+        - abierta
+#        - cerrada
     sequence:
 
 
     - choose:
       - alias: Ejecutar acción abierta si toca (y si hay)
         conditions:
-        - condition: trigger
-          id: 
-          - abierta
-        - condition: template
-          value_template: >
-            {{ accion_abrir is defined and accion_abrir|length > 0 }}
+          - condition: trigger
+            id: 
+            - abierta
+          - condition: template
+            value_template: >
+              {{ accion_abrir is defined and accion_abrir|length > 0 }}
         sequence: !input accion_abrir
 
 
     - choose:
       - alias: Si está marcada acción recursiva (y si hay)
         conditions:
-        - condition: template
-          value_template: >
-            {{ aviso_repetitivo }}                 
-        - condition: template
-          value_template: >
-            {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
+          - condition: template
+            value_template: >
+              {{ aviso_repetitivo }}                 
+          - condition: template
+            value_template: >
+              {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
         sequence:
         - alias: Iteramos hasta que se cierre
           repeat:
@@ -253,13 +253,13 @@ action:
               then:
                 choose:
                   conditions:
-                  - or:
-                    - condition: template
-                      value_template: >
-                        {{ not presencia }}
-                    - condition: state
-                      entity_id: !input presencia
-                      state: "off"
+                  or:
+                  - condition: template
+                    value_template: >
+                      {{ not presencia }}
+                  - condition: state
+                    entity_id: !input presencia
+                    state: "off"
                   sequence: !input accion_repeticion
               else:
               - alias: Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
