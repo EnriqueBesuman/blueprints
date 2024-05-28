@@ -241,8 +241,8 @@ action:
               variables:
                 tiempo_abierta: >
                   {{ (intervalo_repeticion |int(0) * repeat.index |int(0)) }}
-            - alias: Si después del intervalo aún no se ha cerrado, ejecutamos acción recursiva (si no presencia)
               if:
+              - alias: Si después del intervalo aún no se ha cerrado, ejecutamos acción recursiva (si no presencia)
                 condition: state
                 entity_id: !input dispositivo
                 state: 'on'
@@ -258,8 +258,8 @@ action:
                         entity_id: !input presencia
                         state: "off"
                   sequence: !input accion_repeticion
-            - alias: Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
               else:
+              - alias: Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
                 choose:
                   conditions:
                   - and:
