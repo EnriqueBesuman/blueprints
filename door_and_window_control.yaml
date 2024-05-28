@@ -289,8 +289,7 @@ action:
               {{ not accion_cerrar_solo_rep }}
           - condition: state
             entity_id: !input dispositivo
-            from: 'on'
-            to: 'off'
+            state: 'off'
             for: !input retraso_cerrar
         sequence: !input accion_cerrar
         
