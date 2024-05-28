@@ -265,6 +265,9 @@ action:
               else:
                 choose:
                   - conditions:
+                      - condition: template 
+                        value_template: >
+                          {{ repeat.index > 0 }}
                       - condition: template
                         value_template: >
                           {{ accion_cerrar_solo_rep }}
