@@ -241,7 +241,7 @@ action:
               variables:
                 tiempo_abierta: >
                   {{ (intervalo_repeticion |int(0) * repeat.index |int(0)) }}
-              if:
+            - if:
               - alias: Si después del intervalo aún no se ha cerrado, ejecutamos acción recursiva (si no presencia)
                 condition: state
                 entity_id: !input dispositivo
