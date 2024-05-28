@@ -267,7 +267,7 @@ action:
                   - conditions:
                       - condition: template 
                         value_template: >
-                          {{ repeat.index > 0 }}
+                          {{ repeat.index > 1 }}
                       - condition: template
                         value_template: >
                           {{ accion_cerrar_solo_rep }}
