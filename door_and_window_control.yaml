@@ -21,7 +21,8 @@ blueprint:
 
     dispositivo:
       name: Doors or Windows
-      description: "`required`\n\n Door or Window to control"
+      description: "`required`\n\n 
+        Door or Window to control"
       selector:
         entity:
           multiple: false
@@ -40,8 +41,9 @@ blueprint:
             - garage_door
 
     retraso_abrir:
-      name: Delay opening
-      description: "`optional`\n\n Waiting time **in seconds**, from opening
+      name: Delay **OPENING**
+      description: "`optional`\n\n 
+        Waiting time **in seconds**, from opening
         the door or window, until the action is executed"
       default: 0
       selector:
@@ -54,7 +56,8 @@ blueprint:
 
     accion_abrir:
       name: Opening actions
-      description: "`optional`\n\n Actions to be executed when the doors or/and windows is opened.\n\n
+      description: "`optional`\n\n 
+        Actions to be executed when the doors or/and windows is opened.\n\n
         For notification-type actions, the following variables are availables to compose the body of the message:\n\n 
         - ***{{ retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
         until the action is executed.\n - ***{{ retraso_cerrar }}***: Timeout
@@ -65,15 +68,17 @@ blueprint:
         action: {}
 
     aviso_repetitivo:
-      name: Execute recursive action while the door or window is open
-      description: "`required`\n\n Execute action every x time while the door or window remains open."
+      name: Execute **RECURSIVE** action while the door or window is open
+      description: "`required`\n\n 
+        Execute action every x time while the door or window remains open."
       default: false
       selector:
         boolean: {}
 
     intervalo_repeticion:
-      name: Interval between actions
-      description: "`optional`\n\n Interval **in minutes** between actions, when the door or window remains open."
+      name: Interval between iteration
+      description: "`optional`\n\n 
+        Interval **in minutes** between actions, when the door or window remains open."
       default: 5
       selector:
         number:
@@ -85,24 +90,27 @@ blueprint:
 
     accion_repeticion:
       name: Actions in each repetition
-      description: "`optional`\n\n Actions to be executed while the door or window
-        remains open.\n\nFor notification-type actions, they are availables
-        the following variables to compose the body of the message:\n\n - ***{{
-        retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
-        until the action is executed.\n - ***{{ retraso_cerrar }}***: Time
-        waiting time **in seconds**, from when the door or window is closed, until
-        executes the action.\n - ***{{ intervalo_repeticion }}***: Interval **in minutes**
-        between actions, when the door or window remains open.\n - ***{{ (tiempo_abierta
-        }}***: Total time **in minutes** since the door was opened or
+      description: "`optional`\n\n 
+        Actions to be executed while the door or window remains open.\n\n
+        For notification-type actions, they are availables the following variables to compose 
+        the body of the message:\n\n 
+        - ***{{retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
+        until the action is executed.\n 
+        - ***{{ retraso_cerrar }}***: Time waiting time **in seconds**, from when the door or window is 
+        closed, until
+        executes the action.\n 
+        - ***{{ intervalo_repeticion }}***: Interval **in minutes** between actions, when the door or 
+        window remains open.\n 
+        - ***{{ (tiempo_abierta }}***: Total time **in minutes** since the door was opened or
         window (not counting the delay in seconds when opening...)."
       default: []
       selector:
         action: {}
 
     retraso_cerrar:
-      name: Delay closing
-      description: "`opcional`\n\n Waiting time **in seconds**, from closing
-        the door or window, until the action is executed."
+      name: Delay **CLOSING**
+      description: "`opcional`\n\n 
+        Waiting time **in seconds**, from closing the door or window, until the action is executed."
       default: 0
       selector:
         number:
@@ -114,27 +122,34 @@ blueprint:
 
     accion_cerrar:
       name: Closing actions
-      description: "`opcional`\n\n Actions to be executed when the doors or/and windows is closed.\n\n
-        For notification-type actions, the following variables are availables to compose the body of the message:\n\n 
+      description: "`opcional`\n\n 
+        Actions to be executed when the doors or/and windows is closed.\n\n
+        For notification-type actions, the following variables are availables to compose 
+        the body of the message:\n\n 
         - ***{{ retraso_abrir }}***: Waiting time **in seconds**, from when the door or window is opened,
         until the action is executed.\n - ***{{ retraso_cerrar }}***: Timeout
         **in seconds**, from the moment the door or window is closed, until the action is executed.\n 
-        - ***{{ intervalo_repeticion }}***: Interval **in minutes** between actions when the door or window remains open.\n"
+        - ***{{ intervalo_repeticion }}***: Interval **in minutes** between actions when the door or 
+        window remains open.\n"
       default: []
       selector:
         action: {}
 
     accion_cerrar_solo_rep:
       name: Run the close action only if a recursive action occurred
-      description: "`required`\n\n Run the close action only if a recursive action occurred. Possibly this option avoids unnecessary or annoying actions..."
+      description: "`required`\n\n 
+        Run the close action only if a recursive action occurred. Possibly this option avoids unnecessary 
+        or annoying actions..."
       default: false
       selector:
         boolean: {}
 
     presencia:
-      name: Presence sensor
-      description: "`optional`\n\n As long as the sensor detects presence, intermediate actions will not be executed.\n
-        When the sensor stops detecting presence, the actions will resume (as long as the door or window remains open, of course...)"
+      name: "**PRESENCE** sensor"
+      description: "`optional`\n\n 
+        As long as the sensor detects presence, intermediate actions will not be executed.\n
+        When the sensor stops detecting presence, the actions will resume (as long as the door or 
+        window remains open, of course...)"
       default: []
       selector:
         entity:
@@ -185,39 +200,49 @@ condition: []
 action:
 
 - choose:
-  - alias: Puerta o ventana abierta
+  - alias: Trigger tanto con abierta como cerrada
     conditions:
       condition: trigger
-      id: abierta
+      id: 
+      - abierta
+      - cerrada
     sequence:
     - choose:
-      - alias: Ver si aviso puerta abierta
+      - alias: Ejecutar acción abierta si toca (y si hay)
         conditions:
-          condition: template
+        - condition: trigger
+          id: 
+          - abierta
+        - condition: template
           value_template: >
             {{ accion_abrir is defined and accion_abrir|length > 0 }}
         sequence: !input accion_abrir
     - choose:
-      - alias: Si aviso repetitido
+      - alias: Si está marcada acción recursiva (y si hay)
         conditions:
-          condition: template
+        - condition: template
           value_template: >
-            {{ aviso_repetitivo }}
+            {{ aviso_repetitivo }}                 
+        - condition: template
+          value_template: >
+            {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
         sequence:
-        - alias: Esperamos a que se cierre la puerta o ventana a intervalos de x minutos
+        - alias: Iteramos hasta que se cierre
           repeat:
             sequence:
-            - wait_for_trigger:
+            - alias: Esperamos a que se cierre, a intervalos de x minutos
+              wait_for_trigger:
               - platform: state
                 entity_id: !input dispositivo
                 to: 'off'
               timeout:
                 minutes: !input intervalo_repeticion
-            - variables:
+            - alias: Informamos variable tiempo_abierta
+              variables:
                 tiempo_abierta: >
                   {{ (intervalo_repeticion |int(0) * repeat.index |int(0)) }}
-            - if:
-              - alias: Si pasa el intervalo y aún no se ha cerrado la puerta o ventana
+            - alias: Si después del intervalo aún no se ha cerrado, ejecutamos acción recursiva (si no presencia)
+              if:
                 condition: state
                 entity_id: !input dispositivo
                 state: 'on'
@@ -232,40 +257,35 @@ action:
                       - condition: state
                         entity_id: !input presencia
                         state: "off"
+                  sequence: !input accion_repeticion
+            - alias: Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
+              else:
+                choose:
+                  conditions:
+                  - and:
                     - condition: template
                       value_template: >
-                        {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
-                  sequence: !input accion_repeticion
-              else:
-                - alias: se ha cerrado la puerta o ventana, ha habido repetición y está marcada la opción de acción cerrar solo si repetición
-                  choose:
-                    conditions:
-                    - and:
-                      - condition: template
-                        value_template: >
-                          {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-                      - condition: template
-                        value_template: >
-                          {{ (accion_cerrar_solo_rep) }}
-                    sequence: !input accion_cerrar
+                        {{ (accion_cerrar_solo_rep) }}
+                    - condition: template
+                      value_template: >
+                        {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+                  sequence: !input accion_cerrar
             until:
             - condition: state
               entity_id: !input dispositivo
               state: 'off'
-- choose:
-  - alias: Puerta o ventana cerrada
-    conditions:
-      condition: state
-      entity_id: !input dispositivo
-      state: 'off'
-    sequence:
     - choose:
-      - alias: Ejecutar acción cerrar, solo si no se marca la opción de acción cerrar solo si repetición
+      - alias: Ejecutar acción cerrada si toca (y si hay) y NO está marcada la opción de acción cerrar solo si repetición
         conditions:
-        - and:
-          - condition: template
-            value_template: >
-              {{ accion_cerrar is defined and accion_cerrar|length > 0 and not accion_cerrar_solo_rep}}
+        - condition: trigger
+          id: 
+          - cerrada
+        - condition: template
+          value_template: >
+            {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+        - condition: template
+          value_template: >
+            {{ not accion_cerrar_solo_rep }}
         sequence: !input accion_cerrar
         
 mode: single
