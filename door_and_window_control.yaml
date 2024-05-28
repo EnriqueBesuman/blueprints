@@ -186,12 +186,12 @@ trigger:
   from: 'off'
   to: 'on'
   for: !input retraso_abrir
-- id: cerrada
-  platform: state
-  entity_id: !input dispositivo
-  from: 'on'
-  to: 'off'
-  for: !input retraso_cerrar
+#- id: cerrada
+#  platform: state
+#  entity_id: !input dispositivo
+#  from: 'on'
+#  to: 'off'
+#  for: !input retraso_cerrar
 
 
 condition: []
@@ -207,6 +207,8 @@ action:
       - abierta
       - cerrada
     sequence:
+
+
     - choose:
       - alias: Ejecutar acción abierta si toca (y si hay)
         conditions:
@@ -217,6 +219,8 @@ action:
           value_template: >
             {{ accion_abrir is defined and accion_abrir|length > 0 }}
         sequence: !input accion_abrir
+
+
     - choose:
       - alias: Si está marcada acción recursiva (y si hay)
         conditions:
@@ -274,18 +278,22 @@ action:
             - condition: state
               entity_id: !input dispositivo
               state: 'off'
+
+
     - choose:
       - alias: Ejecutar acción cerrada si toca (y si hay) y NO está marcada la opción de acción cerrar solo si repetición
         conditions:
-        - condition: trigger
-          id: 
-          - cerrada
         - condition: template
           value_template: >
             {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
         - condition: template
           value_template: >
             {{ not accion_cerrar_solo_rep }}
+        - condition: state
+          entity_id: !input dispositivo
+          from: 'on'
+          to: 'off'
+          for: !input retraso_cerrar
         sequence: !input accion_cerrar
         
 mode: single
