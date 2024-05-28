@@ -1,17 +1,24 @@
 blueprint:
   name: MIO - Lights Control 
   description: "Turns lights on and off based on the following scenes:\n\n
-    > - When a **Binary Sensor** is activated. In this case, the operation is as follows:\n
+    > - **SENSOR MODE**:\n
+    >> When one or more **Activators** (Binary Sensor) is activated. In this case, the operation is as follows:\n
     >> - The lights will turn on when ***ANY*** of the sensors are activated.\n
     >> - The lights will turn off when ***ALL*** sensors are deactivated.\n
-    >> Optionally, a delay time can be indicated for turning off the lights.\n
-    > - And/or When **Dawn or Dusk** (also based on an optional time lag, and the
-    operating mode **Day or Night**).\n
-    > - And/or When an NFC tag is read.\n
-    > - According to a certain level of **luminosity** (applies in any of the previous cases).\n\n\n
+    >> Optionally, a delay time can be indicated for turning off the lights (Only at night).\n
+    >> Optionally, can be indicated turns the lights on and off, ONLY at night (Waiting time on).\n\n
+    > - **NATURAL MODE**:\n
+    >> Turns lights on and off at dawn or dusk, depending on the **Operating Mode**.\n
+    >> Optionally, can be indicated a time lag with respect to sunrise or sunset.\n\n
+    > - **NFC MODE**:\n
+    >> The lights will turn on/off alternately when an NFC tag is read.\n\n
+    > - **TO ALL MODES**:\n
+    > The lights will turn on ONLY according to a certain level of **luminosity**.\n\n
+    None of the modes are exclusive, so 1, 2 or 3 can be activated, as needed.\n\n\n
 
     **Version**: \n
-    > - 1.0.5: Waiting time on as select time\n\n
+    > - 1.0.5: Waiting time on as select time\n
+    > - 1.0.6: Description and comments are improved\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -34,14 +41,15 @@ blueprint:
     modo_sensor:
       name: ACTIVATE **SENSOR MODE**.
       description: "`required`\n\n 
-        Turns the lights on and off, depending on the **Binary Sensor** activator selected."
+        Turns the lights on and off, depending on the **Binary Sensor** activators selected."
       default: false
       selector:
         boolean: {}
     activador:
       name: Activator
       description: ">`optional`\n\n
-        >Binary sensor that turns lights on or off (in addition to dawn or dusk, if selected)."
+        >Binary sensor that turns lights on or off.\n
+        >ONLY has effect (and it is MANDATORY) if **SENSOR MODE** is selected."
       default: []
       selector:
         entity:
@@ -52,8 +60,8 @@ blueprint:
     solo_noche_sensor:
       name: Only at night
       description: ">`optional`\n\n 
-        >Turns the lights on and off, only at night (regardless of dawn or dusk).\n
-        >ONLY HAS EFFECT IF A BINARY SENSOR IS SELECTED."
+        >Turns the lights on and off, ONLY at night.\n
+        >ONLY has effect if **SENSOR MODE** is selected."
       default: false
       selector:
         boolean: {}
@@ -61,14 +69,14 @@ blueprint:
       name: "Waiting time on"
       description: ">`optional`\n\n 
         >Time the lights remain on since the sensor was last deactivated.\n
-        >ONLY HAS EFFECT IF A BINARY SENSOR IS SELECTED."
+        >ONLY has effect if **SENSOR MODE** is selected."
       default: 00:01:00
       selector:
         time: {}
     modo_natural:
       name: ACTIVATE **NATURAL MODE**
       description: "`required`\n\n 
-        Turns lights on and off, after dusk and before dawn (in addition to binary sensor, if selected)."
+        Turns lights on and off, after dusk and before dawn."
       default: false
       selector:
         boolean: {}
@@ -77,7 +85,7 @@ blueprint:
       description: ">`optional`\n\n 
         >In daytime mode, the lights will turn on at dawn and turn off at dusk.\n
         >In night mode, the lights will turn on at dusk, and turn off at dawn.\n
-        >ONLY HAS EFFECT IF DUMP-DAWN IS CONSIDERED"
+        >ONLY has effect (and it is MANDATORY) if **NATURAL MODE** is selected."
       default: day
       selector:
         select:
@@ -93,7 +101,7 @@ blueprint:
       description: ">`optional`\n\n 
         >Time lag with respect to sunrise for turning on or off.\n
         >Set negative to advance the start time and positive to delay it.\n
-        >ONLY HAS EFFECT IF DUMP-DAWN IS CONSIDERED"
+        >ONLY has effect if **NATURAL MODE** is selected."
       default: 00:30:00
       selector:
         time: {}
@@ -102,7 +110,7 @@ blueprint:
       description: ">`optional`\n\n
         >Time lag with respect to dusk for turning off or on.\n
         >Set negative to advance the start time and positive to delay it.\n
-        >ONLY HAS EFFECT IF DUMP-DAWN IS CONSIDERED"
+        >ONLY has effect if **NATURAL MODE** is selected."
       default: '00:-30:00'
       selector:
         time: {}
@@ -111,7 +119,7 @@ blueprint:
     modo_nfc:
       name: ACTIVATE **NFC MODE**.
       description: "`required`\n\n 
-        Turns the lights on and off, depending on one or more selected **NFC Tags**."
+        Turns the lights on and off alternately, depending on one or more selected **NFC Tags**."
       default: false
       selector:
         boolean: {}
@@ -119,8 +127,8 @@ blueprint:
       name: Tag id
       description: ">`optional`\n\n
         >The tag ID of your NFC trigger.\n
-        >Can be found under Settings --> NFC Tags and then click on the NFC Tag you want to choose.
-        >MANDATORY IF **NFC MODE** IS ACTIVATED."
+        >Can be found under Settings --> NFC Tags and then click on the NFC Tag you want to choose.\n
+        >ONLY has effect (and it is MANDATORY) if **NATURAL MODE** is selected."
       default: 
       selector:
         text:
@@ -131,7 +139,7 @@ blueprint:
       name: Illuminance sensor
       description: "`optional`\n\n
         Illuminance measurement entity.\n
-        IT HAS EFFECT IN ALL SCENARIOS."
+        It has effect IN ALL SCENARIOS."
       default: []
       selector:
         entity:
@@ -143,7 +151,7 @@ blueprint:
       name: Maximum illuminance level (lux)
       description: ">`optional`\n\n
         >Maximum illuminance level (lux). If the measured illuminance is higher, the lights will not turn on.\n
-        >ONLY HAS EFFECT IF A ILLUMINANCE SENSOR IS SELECTED."
+        >ONLY has effect (and it is MANDATORY) if an **ILLUMINANCE SENSOR** is selected."
       default: 300
       selector:
         number:
@@ -226,7 +234,6 @@ action:
                   {{ ( not solo_noche_sensor) or 
                   (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
             then:
-#              - service: light.turn_{{ states(activador) }}
               - service: light.turn_{{ iif( trigger.id == 'activador_on','on','off' ) }}
                 data:
                   entity_id: '{{ luces }}'
