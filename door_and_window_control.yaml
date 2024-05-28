@@ -200,18 +200,18 @@ condition: []
 action:
 
 - choose:
-  - alias: Trigger tanto con abierta como cerrada
-    conditions:
-      - condition: trigger
-        id: 
-        - abierta
+#   Trigger SOLO abierta 
+  - conditions:
+    - condition: trigger
+      id: 
+      - abierta
 #        - cerrada
     sequence:
 
 
     - choose:
-      - alias: Ejecutar acción abierta si toca (y si hay)
-        conditions:
+#     Ejecutar acción abierta si toca (y si hay)
+      - conditions:
           - condition: trigger
             id: 
             - abierta
@@ -222,8 +222,8 @@ action:
 
 
     - choose:
-      - alias: Si está marcada acción recursiva (y si hay)
-        conditions:
+#     Si está marcada acción recursiva (y si hay)
+      - conditions:
           - condition: template
             value_template: >
               {{ aviso_repetitivo }}                 
@@ -231,25 +231,25 @@ action:
             value_template: >
               {{ accion_repeticion is defined and accion_repeticion|length > 0 }}
         sequence:
-        - alias: Iteramos hasta que se cierre
+#         Iteramos hasta que se cierre
           repeat:
             sequence:
-            - alias: Esperamos a que se cierre, a intervalos de x minutos
-              wait_for_trigger:
+#           alias: Esperamos a que se cierre, a intervalos de x minutos
+            - wait_for_trigger:
               - platform: state
                 entity_id: !input dispositivo
                 to: 'off'
-                timeout:
-                  minutes: !input intervalo_repeticion
-            - alias: Informamos variable tiempo_abierta
-              variables:
+              timeout:
+                minutes: !input intervalo_repeticion
+#           Informamos variable tiempo_abierta
+            - variables:
                 tiempo_abierta: >
                   {{ (intervalo_repeticion |int(0) * repeat.index |int(0)) }}
+#           Si después del intervalo aún no se ha cerrado, ejecutamos acción recursiva (si no presencia)
             - if:
-              - alias: Si después del intervalo aún no se ha cerrado, ejecutamos acción recursiva (si no presencia)
-                condition: state
-                entity_id: !input dispositivo
-                state: 'on'
+                - condition: state
+                  entity_id: !input dispositivo
+                  state: 'on'
               then:
                 choose:
                   - conditions:
@@ -261,37 +261,37 @@ action:
                           entity_id: !input presencia
                           state: "off"
                     sequence: !input accion_repeticion
+#             Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
               else:
-              - alias: Si despues del intervalo se ha cerrado, ha habido repetición y está marcada la opción de acción cerrar solo si repetición (y si hay)
                 choose:
-                  conditions:
-                  - condition: template
-                    value_template: >
-                      {{ accion_cerrar_solo_rep }}
-                  - condition: template
-                    value_template: >
-                      {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-                  sequence: !input accion_cerrar
+                  - conditions:
+                      - condition: template
+                        value_template: >
+                          {{ accion_cerrar_solo_rep }}
+                      - condition: template
+                        value_template: >
+                          {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+                    sequence: !input accion_cerrar
             until:
-            - condition: state
-              entity_id: !input dispositivo
-              state: 'off'
+              - condition: state
+                entity_id: !input dispositivo
+                state: 'off'
 
 
     - choose:
-      - alias: Ejecutar acción cerrada si toca (y si hay) y NO está marcada la opción de acción cerrar solo si repetición
-        conditions:
-        - condition: template
-          value_template: >
-            {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
-        - condition: template
-          value_template: >
-            {{ not accion_cerrar_solo_rep }}
-        - condition: state
-          entity_id: !input dispositivo
-          from: 'on'
-          to: 'off'
-          for: !input retraso_cerrar
+#     Ejecutar acción cerrada si toca (y si hay) y NO está marcada la opción de acción cerrar solo si repetición
+      - conditions:
+          - condition: template
+            value_template: >
+              {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+          - condition: template
+            value_template: >
+              {{ not accion_cerrar_solo_rep }}
+          - condition: state
+            entity_id: !input dispositivo
+            from: 'on'
+            to: 'off'
+            for: !input retraso_cerrar
         sequence: !input accion_cerrar
         
 mode: single
