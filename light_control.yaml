@@ -137,7 +137,7 @@ blueprint:
 
 
     sensor_luminancia:
-      name: **TO ALL MODES**: Illuminance sensor
+      name: Illuminance sensor **TO ALL MODES**
       description: "`optional`\n\n
         Illuminance measurement entity.\n
         It has effect IN ALL SCENARIOS."
