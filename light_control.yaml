@@ -18,7 +18,8 @@ blueprint:
 
     **Version**: \n
     > - 1.0.5: Waiting time on as select time\n
-    > - 1.0.6: Description and comments are improved\n\n
+    > - 1.0.6: Description and comments are improved\n
+    > - 1.1.0: Solution to the problem of luminosity control\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -173,7 +174,10 @@ variables:
   luminancia: !input luminancia
   solo_noche_sensor: !input solo_noche_sensor
   modo: !input modo
-
+  luminancia_baja: >
+    {{ (sensor_luminancia | length == 0) or
+      (sensor_luminancia | length > 0 and
+      states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
 
 trigger_variables:
 
@@ -206,12 +210,12 @@ trigger:
   id: nfc
 
 
-condition:
-  - condition: template
-    value_template: >
-      {{ (sensor_luminancia | length == 0) or
-        (sensor_luminancia | length > 0 and
-        states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
+#condition:
+#  - condition: template
+#    value_template: >
+#      {{ (sensor_luminancia | length == 0) or
+#        (sensor_luminancia | length > 0 and
+#        states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
 
 
 action:
@@ -234,7 +238,7 @@ action:
                   {{ ( not solo_noche_sensor) or 
                   (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
             then:
-              - service: light.turn_{{ iif( trigger.id == 'activador_on','on','off' ) }}
+              - service: light.turn_{{ iif( trigger.id == 'activador_on' and luminancia_baja ,'on','off' ) }}
                 data:
                   entity_id: '{{ luces }}'
 
@@ -248,17 +252,17 @@ action:
             id:
               - sunrise
         then:
-          - service: light.turn_{{ iif (modo == "dia", "on", "off") }}
-            target:
-              entity_id: !input luces
+          - service: light.turn_{{ iif (modo == "dia" and luminancia_baja, "on", "off") }}
+            data:
+              entity_id: '{{ luces }}'
       - if:
           - condition: trigger
             id:
               - sunset
         then:
-          - service: light.turn_{{ iif (modo == "dia", "off", "on") }}
-            target:
-              entity_id: !input luces
+          - service: light.turn_{{ iif (modo == "noche" and luminancia_baja, "on", "off") }}
+            data:
+              entity_id: '{{ luces }}'
 
   - if:
       - condition: template
@@ -270,7 +274,7 @@ action:
             id:
               - nfc
         then:
-          - service: light.toggle
+          - service: light.turn_{{ iif ( states(luces) == 'off' and luminancia_baja, "on", "off") }}
             data:
               entity_id: '{{ luces }}'
 
