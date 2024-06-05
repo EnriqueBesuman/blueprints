@@ -118,7 +118,7 @@ blueprint:
 
 
     modo_nfc:
-      name: ACTIVATE **NFC MODE**.
+      name: ACTIVATE **NFC MODE**
       description: "`required`\n\n 
         Turns the lights on and off alternately, depending on one or more selected **NFC Tags**."
       default: false
