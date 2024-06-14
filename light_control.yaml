@@ -20,7 +20,7 @@ blueprint:
     > - 1.0.5: Waiting time on as select time\n
     > - 1.0.6: Description and comments are improved\n
     > - 1.1.0: Solution to the problem of luminosity control\n
-    > - 1.1.1: Solution to import blueprint in HASS in the calc of luminancia_baja\n\n
+    > - 1.1.1: The problems with the luminancia_baja are solved\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -229,15 +229,19 @@ action:
           - condition: trigger
             id:
               - activador_off
-              - activador_on
         then:
+          - service: light.turn_off
+            data:
+              entity_id: '{{ luces }}'
+        else:
           - if:
               - condition: template
                 value_template: >
-                  {{ ( not solo_noche_sensor) or 
-                  (solo_noche_sensor and states('sun.sun') == 'below_horizon') }}
+                  {{ ((not solo_noche_sensor) or 
+                  (solo_noche_sensor and states('sun.sun') == 'below_horizon'))
+                  and luminancia_baja }}
             then:
-              - service: light.turn_{{ iif( trigger.id == 'activador_on' and luminancia_baja ,'on','off' ) }}
+              - service: light.turn_on
                 data:
                   entity_id: '{{ luces }}'
 
