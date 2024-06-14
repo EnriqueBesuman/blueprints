@@ -19,7 +19,8 @@ blueprint:
     **Version**: \n
     > - 1.0.5: Waiting time on as select time\n
     > - 1.0.6: Description and comments are improved\n
-    > - 1.1.0: Solution to the problem of luminosity control\n\n
+    > - 1.1.0: Solution to the problem of luminosity control\n
+    > - 1.1.1: Solution to import blueprint in HASS in the calc of luminancia_baja\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -175,9 +176,7 @@ variables:
   solo_noche_sensor: !input solo_noche_sensor
   modo: !input modo
   luminancia_baja: >
-    {{ (sensor_luminancia | length == 0) or
-      (sensor_luminancia | length > 0 and
-      states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
+    {{ (sensor_luminancia | length == 0) or (sensor_luminancia | length > 0 and states(sensor_luminancia) | float(0) <= luminancia | float(0)) }}
 
 trigger_variables:
 
