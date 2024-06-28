@@ -41,9 +41,20 @@ blueprint:
           filter:
           - domain: climate
 
+    modo_anterior:
+      name: Previous Mode
+      description: "`required`\n\n
+        Input Select to store the mode in which the climate entity was before turning it off.
+        It is saved whenever the window is opened, or/and people leave the room, even when the climate entity is off."
+      selector:
+        entity:
+          multiple: false
+          filter:
+          - domain: input_select
+
     seccion_ventanaspuertas:
       name: Windows and Doors
-      icon: mdi:window
+      icon: mdi:window-open
       description: Windows and doors that controls the climate entity.
             
       input:
@@ -106,7 +117,7 @@ blueprint:
 
     seccion_presencia:
       name: Presence/Motion sensor
-      icon: mdi:motion
+      icon: mdi:motion-sensor
       description: Motion or Presence sensor that controls the climate entity.
             
       input:
@@ -156,7 +167,7 @@ blueprint:
 
     seccion_personas:
       name: Persons
-      icon: mdi:person
+      icon: mdi:account-group-outline
       description: People that we want to control if they are in the HOME (not in room, for the momment) or no.
             
       input:
@@ -214,16 +225,6 @@ blueprint:
           selector:
             action: {}
 
-    modo_anterior:
-      name: Previous Mode
-      description: "`required`\n\n
-        Input Select to store the mode in which the climate entity was before turning it off.
-        It is saved whenever the window is opened, or/and people leave the room, even when the climate entity is off."
-      selector:
-        entity:
-          multiple: false
-          filter:
-          - domain: input_select
 
 variables:
 
