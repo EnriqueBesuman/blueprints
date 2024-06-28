@@ -21,7 +21,8 @@ blueprint:
     > - 1.0.6: Description and comments are improved\n
     > - 1.1.0: Solution to the problem of luminosity control\n
     > - 1.1.1: The problems with the luminancia_baja are solved\n
-    > - 1.2.0: The bug that turns off the lights at dawn in sensor mode is resolved\n\n
+    > - 1.2.0: The bug that turns off the lights at dawn in sensor mode is resolved\n
+    > - 1.2.1: Improve selecter filter activator\n\n
     **Documentation:** We're working on it, but I think it's pretty self-explanatory..."
 
   domain: automation
@@ -60,6 +61,8 @@ blueprint:
           filter:
           - domain:
             - binary_sensor
+          - device_class: 
+            - motion
     solo_noche_sensor:
       name: Only at night
       description: ">`optional`\n\n 
