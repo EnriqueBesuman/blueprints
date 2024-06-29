@@ -1,302 +1,404 @@
 blueprint:
   name: MIO - Climate Control
-  description: "Turns off (if on) and returns to its previous state an climate device
-    (thermostat, air conditioning...) based on the following scenes:\n\n > - They
-    are opened or close a group of windows and/or doors. A delay can be programmed
-    in the on/off, and an action after each change.\n\n\n### Actions:\n\n\n> Optionally,
-    one or more actions can be configured to be executed when windows are opened or
-    closed.\n > For notification type actions (which will be the most common), the
-    following variables are made available to compose the body of the message:\n\n
-    >  - ***{{ list_open }}***: List of open windows or/and doors.\n\n >  - ***{{
-    list_open }}***: List of close windows or/and doors.\n\n >  - ***{{ list_home
-    }}***: List of people in the room.\n\n >  - ***{{ list_away }}***: List of people
-    outside the room.\n\n\n### Previous mode:\n\n\nYou need to create an entity [***'input_select'***](https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
-    with the possible states (***'hvac_mode'*** values) in which your air conditioner
-    can be, to save the previous state, and be able to restore it when the windows
-    are closed.\n\n\n**Version**: 1.0.0\n\n**Documentation:** We are working on it,
-    but there is little more that can be said that has not already been said..."
+  description: "Turns off (if on) and returns to its previous state
+    an climate device (thermostat, air conditioning...) based on the following scenes:\n\n
+    > - They are opened or close a group of windows and/or doors. A delay can be programmed in the
+    on/off, and an action after each change.\n\n
+
+    ### Actions:\n\n
+
+    > Optionally, one or more actions can be configured to be executed when windows are opened or closed.\n
+    > For notification type actions (which will be the most common), the following variables are made available to compose the body of the message:\n\n
+    > \ - ***{{ list_open }}***: List of open windows or/and doors.\n\n
+    > \ - ***{{ list_open }}***: List of close windows or/and doors.\n\n
+    > \ - ***{{ list_home }}***: List of people in the room.\n\n
+    > \ - ***{{ list_away }}***: List of people outside the room.\n\n
+
+    ### Previous mode:\n\n
+
+    You need to create an entity [***'input_select'***](https://www.home-assistant.io/docs/blueprint/selectors/#select-selector)
+    with the possible states (***'hvac_mode'*** values) in which your air conditioner can be, to save the previous state,
+    and be able to restore it when the windows are closed.\n\n
+
+    **Version**:\n
+    > - 1.0.0: Initial version.\n
+    > - 1.1.0: Presence detection inclued.\n\n
+    
+    **Documentation:** We are working on it, but there is little more that can be said that has not already been said..."
+  
   domain: automation
   source_url: https://github.com/EnriqueBesuman/blueprints/blob/main/climate_control.yaml
+
   input:
+
     climatizador:
       name: Climate Entity
-      description: "`required`\n\n The climate entity that will be in contact with
-        the windows and/or doors."
+      description: "`required`\n\n
+        The climate entity that will be in contact with the windows and/or doors."
       selector:
         entity:
           multiple: false
           filter:
-          - domain:
-            - climate
-    ventanas:
-      name: Windows/Doors
-      description: "`optional`\n\n The windows or doors that controls the climate
-        entity."
-      default: []
-      selector:
-        entity:
-          multiple: true
-          filter:
-          - domain:
-            - binary_sensor
-            device_class:
-            - window
-          - domain:
-            - binary_sensor
-            device_class:
-            - door
-    retraso_abrir:
-      name: Delay Opening
-      description: "`optional`\n\n Waiting time in seconds, from when the window opened
-        until the climate entity is turned off."
-      default: 30
-      selector:
-        number:
-          min: 0.0
-          max: 3600.0
-          unit_of_measurement: seconds
-          mode: box
-          step: 1.0
-    accion_abrir:
-      name: Opening Actions
-      description: "`optional`\n\n Actions to be executed when windows and/or doors
-        are opened (e.g. sending a notification)."
-      default: []
-      selector:
-        action: {}
-    retraso_cerrar:
-      name: Delay Closing
-      description: "`optional`\n\n Waiting time in seconds, from when the window closed
-        until the climate entity is turned off."
-      default: 10
-      selector:
-        number:
-          min: 0.0
-          max: 3600.0
-          unit_of_measurement: seconds
-          mode: box
-          step: 1.0
-    accion_cerrar:
-      name: Closing Actions
-      description: "`optional`\n\n Actions to be executed when windows and/or doors
-        are closed (e.g. sending a notification)."
-      default: []
-      selector:
-        action: {}
-    personas:
-      name: People
-      description: "`optional`\n\n People that we want to control if they are in the
-        room or not."
-      default: []
-      selector:
-        entity:
-          multiple: true
-          filter:
-          - domain:
-            - person
-    retraso_salir:
-      name: Delay Leaving
-      description: "`optional`\n\n Waiting time in seconds, from when the people exit
-        until the climate entity is turned off."
-      default: 30
-      selector:
-        number:
-          min: 0.0
-          max: 3600.0
-          unit_of_measurement: seconds
-          mode: box
-          step: 1.0
-    accion_salir:
-      name: Actions Leaving
-      description: "`optional`\n\n Actions to be executed when people leave the room
-        (e.g. sending a notification)."
-      default: []
-      selector:
-        action: {}
-    retraso_entrar:
-      name: Delay Entering
-      description: "`optional`\n\n Waiting time in seconds, from when people enter
-        the room until the condition of the climate entity is recovered."
-      default: 30
-      selector:
-        number:
-          min: 0.0
-          max: 600.0
-          unit_of_measurement: seconds
-          mode: box
-          step: 1.0
-    accion_entrar:
-      name: Actions Entering
-      description: "`optional`\n\n Actions to be executed when people return to the
-        room (e.g. sending a notification)."
-      default: []
-      selector:
-        action: {}
+          - domain: climate
+
     modo_anterior:
       name: Previous Mode
-      description: "`required`\n\n Input Select to store the mode in which the climate
-        entity was before turning it off. It is saved whenever the window is opened,
-        or/and people leave the room, even when the climate entity is off."
+      description: "`required`\n\n
+        Input Select to store the mode in which the climate entity was before turning it off.
+        It is saved whenever the window is opened, or/and people leave the room, even when the climate entity is off."
       selector:
         entity:
           multiple: false
           filter:
-          - domain:
-            - input_select
+          - domain: input_select
+
+    seccion_ventanaspuertas:
+      name: Windows and Doors
+      icon: mdi:window-open
+      description: Windows and doors that controls the climate entity.
+            
+      input:
+        ventanas:
+          name: Windows/Doors
+          description: "`optional`\n\n
+            The windows or doors that controls the climate entity."
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+              - domain: binary_sensor
+                device_class: window
+              - domain: binary_sensor
+                device_class: door
+
+        retraso_abrir:
+          name: Delay Opening
+          description: "`optional`\n\n
+            Waiting time in seconds, from when the window opened until the climate entity is turned off."
+          default: 30
+          selector:
+            number:
+              min: 0.0
+              max: 3600.0
+              unit_of_measurement: seconds
+              mode: box
+              step: 1.0
+
+        accion_abrir:
+          name: Opening Actions
+          description: "`optional`\n\n
+            Actions to be executed when windows and/or doors are opened (e.g. sending a notification)."
+          default: []
+          selector:
+            action: {}
+
+        retraso_cerrar:
+          name: Delay Closing
+          description: "`optional`\n\n
+            Waiting time in seconds, from when the window closed until the climate entity is turned off."
+          default: 10
+          selector:
+            number:
+              min: 0.0
+              max: 3600.0
+              unit_of_measurement: seconds
+              mode: box
+              step: 1.0
+
+        accion_cerrar:
+          name: Closing Actions
+          description: "`optional`\n\n
+            Actions to be executed when windows and/or doors are closed (e.g. sending a notification)."
+          default: []
+          selector:
+            action: {}
+
+
+    seccion_presencia:
+      name: Presence/Motion sensor
+      icon: mdi:motion-sensor
+      description: Motion or Presence sensor that controls the climate entity.
+            
+      input:
+        presencia:
+          name: Motion Sensor
+          description: ">`optional`\n\n
+            >The climate will turn on or off depending on the sensor and the indicated waiting time."
+          default: []
+          selector:
+            entity:
+              multiple: false
+              filter:
+              - domain:
+                - binary_sensor
+              - device_class: 
+                - motion
+
+        espera_presencia:
+          name: Wait since last move
+          description: "`optional`\n\n
+            Time in seconds that must pass since the last motion detection, to turn the climate on or off."
+          default: 60
+          selector:
+            number:
+              min: 0.0
+              max: 3600.0
+              unit_of_measurement: seconds
+              mode: box
+              step: 1.0
+
+        accion_presencia:
+          name: Actions with motion
+          description: "`optional`\n\n
+            Actions to be executed when motion is detected (e.g. sending a notification)."
+          default: []
+          selector:
+            action: {}
+
+        accion_no_presencia:
+          name: Actions without motion
+          description: "`optional`\n\n
+            Actions to be executed when motion is not detected (e.g. sending a notification)."
+          default: []
+          selector:
+            action: {}
+
+
+    seccion_personas:
+      name: Persons
+      icon: mdi:account-group-outline
+      description: People that we want to control if they are in the HOME (not in room, for the momment) or no.
+            
+      input:
+
+        personas:
+          name: People 
+          description: "`optional`\n\n
+            People that we want to control if they are in the HOME (not in room, for the momment) or not."
+          default: []
+          selector:
+            entity:
+              multiple: true
+              filter:
+              - domain: person
+
+        retraso_salir:
+          name: Delay Leaving
+          description: "`optional`\n\n
+            Waiting time in seconds, from when the people exit until the climate entity is turned off."
+          default: 30
+          selector:
+            number:
+              min: 0.0
+              max: 3600.0
+              unit_of_measurement: seconds
+              mode: box
+              step: 1.0
+              
+        accion_salir:
+          name: Actions Leaving
+          description: "`optional`\n\n
+            Actions to be executed when people leave the room (e.g. sending a notification)."
+          default: []
+          selector:
+            action: {}
+
+        retraso_entrar:
+          name: Delay Entering
+          description: "`optional`\n\n
+            Waiting time in seconds, from when people enter the room until the condition of the climate entity is recovered."
+          default: 30
+          selector:
+            number:
+              min: 0.0
+              max: 600.0
+              unit_of_measurement: seconds
+              mode: box
+              step: 1.0
+
+        accion_entrar:
+          name: Actions Entering
+          description: "`optional`\n\n
+            Actions to be executed when people return to the room (e.g. sending a notification)."
+          default: []
+          selector:
+            action: {}
+
+
 variables:
+
   accion_abrir: !input accion_abrir
   accion_cerrar: !input accion_cerrar
   accion_salir: !input accion_salir
   accion_entrar: !input accion_entrar
   climatizador: !input climatizador
   modo_anterior: !input modo_anterior
-  list_open: '{{ expand(ventanas) | selectattr(''state'', ''=='', ''on'') | map(attribute=''name'')
-    | list | join('', '') }}
 
-    '
-  list_close: '{{ expand(ventanas) | selectattr(''state'', ''=='', ''off'') | map(attribute=''name'')
-    | list | join('', '') }}
+  list_open: >
+    {{ expand(ventanas) | selectattr('state', '==', 'on') | map(attribute='name') | list | join(', ') }}
+  list_close: >
+    {{ expand(ventanas) | selectattr('state', '==', 'off') | map(attribute='name') | list | join(', ') }}
+  list_home: >
+    {{ expand(personas) | selectattr('state', '==', 'home') | map(attribute='name') | list | join(', ') }}
+  list_away: >
+    {{ expand(personas) | selectattr('state', '!=', 'home') | map(attribute='name') | list | join(', ') }}
 
-    '
-  list_home: '{{ expand(personas) | selectattr(''state'', ''=='', ''home'') | map(attribute=''name'')
-    | list | join('', '') }}
-
-    '
-  list_away: '{{ expand(personas) | selectattr(''state'', ''!='', ''home'') | map(attribute=''name'')
-    | list | join('', '') }}
-
-    '
 trigger_variables:
   ventanas: !input ventanas
   personas: !input personas
-trigger:
-- platform: template
-  value_template: '{{ expand(ventanas) | selectattr(''state'', ''=='', ''on'') | list
-    | count > 0 }}
+  presencia: !input presencia
 
-    '
+trigger:
+
+- platform: template
+  value_template: >
+    {{ expand(ventanas) | selectattr('state', '==', 'on') | list | count > 0 }}
   for: !input retraso_abrir
   id: abrir
+  
 - platform: template
-  value_template: '{{ expand(ventanas) | selectattr(''state'', ''=='', ''on'') | list
-    | count == 0 }}
-
-    '
+  value_template: >
+    {{ expand(ventanas) | selectattr('state', '==', 'on') | list | count == 0 }}
   for: !input retraso_cerrar
   id: cerrar
-- platform: template
-  value_template: '{{ expand(personas) | selectattr(''state'', ''=='', ''home'') |
-    list | count == 0 }}
 
-    '
+- platform: template
+  value_template: >
+    {{ expand(personas) | selectattr('state', '==', 'home') | list | count == 0 }}
   for: !input retraso_salir
   id: salir
-- platform: template
-  value_template: '{{ expand(personas) | selectattr(''state'', ''=='', ''home'') |
-    list | count > 0 }}
 
-    '
+- platform: template
+  value_template: >
+    {{ expand(personas) | selectattr('state', '==', 'home') | list | count > 0 }}
   for: !input retraso_entrar
   id: entrar
+
+- platform: state
+  entity_id: !input presencia
+  from: 'off'
+  to: 'on'
+  for: !input espera_presencia
+  id: hay_movimiento
+
+- platform: state
+  entity_id: !input presencia
+  from: 'on'
+  to: 'off'
+  for: !input espera_presencia
+  id: no_hay_movimiento
+
 action:
-- if:
-  - and:
-    - condition: trigger
-      id:
-      - abrir
-      - salir
-    - not:
-      - condition: state
-        entity_id: !input climatizador
-        state: 'off'
-  then:
-  - service: input_select.set_options
-    target:
-      entity_id: !input modo_anterior
-    data:
-      options: '{{ states(climatizador) }}
 
-        '
-  - service: climate.turn_off
-    target:
-      entity_id: !input climatizador
-  - choose:
-    - conditions:
+  - if:
       - and:
-        - condition: trigger
-          id:
-          - abrir
-        - condition: template
-          value_template: '{{ accion_abrir is defined and accion_abrir|length > 0
-            }}
+          - condition: trigger
+            id:
+              - abrir
+              - salir
+              - no_hay_movimiento
+          - not:
+              - condition: state
+                entity_id: !input climatizador
+                state: 'off'
+    then:
+      - service: input_select.set_options
+        target:
+          entity_id: !input modo_anterior
+        data:
+          options: >
+            {{ states(climatizador) }}
+      - service: climate.turn_off
+        target:
+          entity_id: !input climatizador
+      - choose:
+          - conditions:
+            - and:
+                - condition: trigger
+                  id: 
+                    - abrir
+                - condition: template
+                  value_template: >
+                    {{ accion_abrir is defined and accion_abrir|length > 0 }}
+            sequence: !input accion_abrir
+          - conditions:
+            - and:
+                - condition: trigger
+                  id: 
+                    - salir
+                - condition: template
+                  value_template: >
+                    {{ accion_salir is defined and accion_salir|length > 0 }}
+            sequence: !input accion_salir
+          - conditions:
+            - and:
+                - condition: trigger
+                  id: 
+                    - no_hay_movimiento
+                - condition: template
+                  value_template: >
+                    {{ accion_no_presencia is defined and accion_no_presencia|length > 0 }}
+            sequence: !input accion_no_presencia
 
-            '
-      sequence: !input accion_abrir
-    - conditions:
+  - if:
       - and:
-        - condition: trigger
-          id:
-          - salir
-        - condition: template
-          value_template: '{{ accion_salir is defined and accion_salir|length > 0
-            }}
+          - condition: trigger
+            id:
+              - cerrar
+              - entrar
+              - hay_movimiento
 
-            '
-      sequence: !input accion_salir
-- if:
-  - and:
-    - condition: trigger
-      id:
-      - cerrar
-      - entrar
-    - condition: template
-      value_template: '{{ expand(ventanas) | selectattr(''state'', ''=='', ''on'')
-        | list | count == 0 }}
+          - condition: template
+            value_template: >
+              {{ expand(ventanas) | selectattr('state', '==', 'on') | list | count == 0 }}
+          - condition: template
+            value_template: >
+              {{ expand(personas) | selectattr('state', '!=', 'home') | list | count == 0 }}
 
-        '
-    - condition: template
-      value_template: '{{ expand(personas) | selectattr(''state'', ''!='', ''home'')
-        | list | count == 0 }}
+          - not:
+              - condition: state
+                entity_id: !input modo_anterior
+                state: 'off'
+    then:
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: !input climatizador
+        data:
+          hvac_mode: >
+            {{ states(modo_anterior) }}
+      - service: input_select.set_options
+        target:
+          entity_id: !input modo_anterior
+        data:
+          options: 'off'
+      - choose:
+          - conditions:
+            - and:
+                - condition: trigger
+                  id: 
+                    - cerrar
+                - condition: template
+                  value_template: >
+                    {{ accion_cerrar is defined and accion_cerrar|length > 0 }}
+            sequence: !input accion_cerrar
+          - conditions:
+            - and:
+                - condition: trigger
+                  id: 
+                    - entrar
+                - condition: template
+                  value_template: >
+                    {{ accion_entrar is defined and accion_entrar|length > 0 }}
+            sequence: !input accion_entrar
+          - conditions:
+            - and:
+                - condition: trigger
+                  id: 
+                    - hay_movimiento
+                - condition: template
+                  value_template: >
+                    {{ accion_presencia is defined and accion_presencia|length > 0 }}
+            sequence: !input accion_presencia
 
-        '
-    - not:
-      - condition: state
-        entity_id: !input modo_anterior
-        state: 'off'
-  then:
-  - service: climate.set_hvac_mode
-    target:
-      entity_id: !input climatizador
-    data:
-      hvac_mode: '{{ states(modo_anterior) }}
-
-        '
-  - service: input_select.set_options
-    target:
-      entity_id: !input modo_anterior
-    data:
-      options: 'off'
-  - choose:
-    - conditions:
-      - and:
-        - condition: trigger
-          id:
-          - cerrar
-        - condition: template
-          value_template: '{{ accion_cerrar is defined and accion_cerrar|length >
-            0 }}
-
-            '
-      sequence: !input accion_cerrar
-    - conditions:
-      - and:
-        - condition: trigger
-          id:
-          - entrar
-        - condition: template
-          value_template: '{{ accion_entrar is defined and accion_entrar|length >
-            0 }}
-
-            '
-      sequence: !input accion_entrar
 mode: restart
